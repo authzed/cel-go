@@ -24,10 +24,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 
 	"github.com/golang/glog"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -35,7 +35,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	rpcpb "google.golang.org/genproto/googleapis/rpc/context/attribute_context"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 	tpb "google.golang.org/protobuf/types/known/timestamppb"
 )
 

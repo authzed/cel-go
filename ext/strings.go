@@ -27,10 +27,10 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 )
 
 const (
@@ -514,7 +514,7 @@ func (lib *stringLib) CompileOptions() []cel.EnvOption {
 		)
 	}
 	if lib.version >= 3 {
-		opts = append( opts,
+		opts = append(opts,
 			cel.Function("reverse",
 				cel.MemberOverload("reverse", []*cel.Type{cel.StringType}, cel.StringType,
 					cel.UnaryBinding(func(str ref.Val) ref.Val {

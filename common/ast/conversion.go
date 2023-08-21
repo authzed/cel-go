@@ -17,10 +17,10 @@ package ast
 import (
 	"fmt"
 
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

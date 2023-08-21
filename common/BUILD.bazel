@@ -14,7 +14,7 @@ go_library(
         "location.go",
         "source.go",
     ],
-    importpath = "github.com/google/cel-go/common",
+    importpath = "github.com/authzed/cel-go/common",
     deps = [
         "//common/runes:go_default_library",
         "@org_golang_google_genproto_googleapis_api//expr/v1alpha1:go_default_library",

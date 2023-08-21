@@ -21,14 +21,14 @@ package(
 go_binary(
     name = "main",
     embed = [":go_default_library"],
-    importpath = "github.com/google/cel-go/repl/appengine/main",
+    importpath = "github.com/authzed/cel-go/repl/appengine/main",
     visibility = ["//visibility:public"],
 )
 
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importpath = "github.com/google/cel-go/repl/main",
+    importpath = "github.com/authzed/cel-go/repl/main",
     visibility = ["//visibility:private"],
     deps = [
         "//repl/appengine/app:go_default_library",

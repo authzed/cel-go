@@ -18,9 +18,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
+	"github.com/authzed/cel-go/test/proto2pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 

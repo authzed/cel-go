@@ -21,7 +21,7 @@ go_library(
         "factory.go",
         "navigable.go",
     ],
-    importpath = "github.com/google/cel-go/common/ast",
+    importpath = "github.com/authzed/cel-go/common/ast",
     deps = [    
         "//common:go_default_library",
         "//common/types:go_default_library",

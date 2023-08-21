@@ -19,7 +19,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 var bindingTests = []struct {

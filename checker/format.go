@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"strings"
 
-	chkdecls "github.com/google/cel-go/checker/decls"
-	"github.com/google/cel-go/common/types"
+	chkdecls "github.com/authzed/cel-go/checker/decls"
+	"github.com/authzed/cel-go/common/types"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/google/cel-go/repl/appengine/app"
+	"github.com/authzed/cel-go/repl/appengine/app"
 )
 
 var port string

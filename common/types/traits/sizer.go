@@ -15,7 +15,7 @@
 package traits
 
 import (
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // Sizer interface for supporting 'size()' overloads.

@@ -21,7 +21,7 @@ go_library(
         "test_all_types.pb.go",
         "test_import.pb.go",
     ],
-    importpath = "github.com/google/cel-go/test/proto3pb",
+    importpath = "github.com/authzed/cel-go/test/proto3pb",
     deps = [
         "@org_golang_google_protobuf//proto:go_default_library",
         "@org_golang_google_protobuf//types/known/anypb:go_default_library",
@@ -54,7 +54,7 @@ proto_library(
 
 go_proto_library(
     name = "test_all_types_go_proto",
-    importpath = "github.com/google/cel-go/test/proto3pb",
+    importpath = "github.com/authzed/cel-go/test/proto3pb",
     protos = [
         ":test_all_types_proto",
         ":test_import_proto",
