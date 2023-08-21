@@ -20,9 +20,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/google/cel-go/checker/decls"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/test"
+	"github.com/authzed/cel-go/checker/decls"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/test"
 	"github.com/google/cel-spec/tools/celrpc"
 
 	confpb "google.golang.org/genproto/googleapis/api/expr/conformance/v1alpha1"

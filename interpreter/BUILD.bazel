@@ -22,7 +22,7 @@ go_library(
         "prune.go",
         "runtimecost.go",
     ],
-    importpath = "github.com/google/cel-go/interpreter",
+    importpath = "github.com/authzed/cel-go/interpreter",
     deps = [
         "//common:go_default_library",
         "//common/ast:go_default_library",

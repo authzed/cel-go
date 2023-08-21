@@ -18,10 +18,10 @@
 package interpreter
 
 import (
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

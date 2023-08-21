@@ -21,11 +21,11 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	"github.com/authzed/cel-go/test/proto2pb"
+	"github.com/authzed/cel-go/test/proto3pb"
 	descpb "google.golang.org/protobuf/types/descriptorpb"
-	dynamicpb "google.golang.org/protobuf/types/dynamicpb"
-	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	tpb "google.golang.org/protobuf/types/known/timestamppb"
 )
 

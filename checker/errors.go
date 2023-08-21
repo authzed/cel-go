@@ -17,9 +17,9 @@ package checker
 import (
 	"reflect"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/types"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/types"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

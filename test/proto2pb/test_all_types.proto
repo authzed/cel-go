@@ -3,7 +3,7 @@ syntax = "proto2";
 
 package google.expr.proto2.test;
 
-option go_package = "github.com/google/cel-go/test/proto2pb";
+option go_package = "github.com/authzed/cel-go/test/proto2pb";
 
 import "google/protobuf/any.proto";
 import "google/protobuf/duration.proto";

@@ -21,7 +21,7 @@ package(
 go_library(
     name = "go_default_library",
     srcs = ["app.go", "api.go"],
-    importpath = "github.com/google/cel-go/repl/appengine/app",
+    importpath = "github.com/authzed/cel-go/repl/appengine/app",
     visibility = ["//repl/appengine:__subpackages__"],
     deps = [
         "//repl:go_default_library"

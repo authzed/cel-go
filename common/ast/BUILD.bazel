@@ -16,7 +16,7 @@ go_library(
         "ast.go",
         "expr.go",
     ],
-    importpath = "github.com/google/cel-go/common/ast",
+    importpath = "github.com/authzed/cel-go/common/ast",
     deps = [    
         "//common/types:go_default_library",
         "//common/types/ref:go_default_library",

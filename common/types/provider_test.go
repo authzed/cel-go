@@ -22,17 +22,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 	"google.golang.org/protobuf/proto"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	"github.com/authzed/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
-	anypb "google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/anypb"
 	dpb "google.golang.org/protobuf/types/known/durationpb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 	tpb "google.golang.org/protobuf/types/known/timestamppb"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestRegistryCopy(t *testing.T) {
@@ -565,7 +565,7 @@ func TestNativeToValue_Any(t *testing.T) {
 	})
 	expectNativeToValue(t, anyValue, expected)
 
-	//Json List
+	// Json List
 	anyValue, err = anypb.New(structpb.NewListValue(
 		&structpb.ListValue{
 			Values: []*structpb.Value{

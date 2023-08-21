@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/operators"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

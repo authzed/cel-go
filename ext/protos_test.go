@@ -20,14 +20,14 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
-	"github.com/google/cel-go/test"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/test"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	"github.com/authzed/cel-go/test/proto2pb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestProtos(t *testing.T) {

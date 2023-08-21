@@ -19,8 +19,8 @@ import (
 	"reflect"
 	"regexp"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/overloads"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

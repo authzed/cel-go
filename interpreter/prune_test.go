@@ -17,15 +17,15 @@ package interpreter
 import (
 	"testing"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/parser"
-	"github.com/google/cel-go/test"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/parser"
+	"github.com/authzed/cel-go/test"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	"github.com/authzed/cel-go/test/proto3pb"
 )
 
 type testInfo struct {

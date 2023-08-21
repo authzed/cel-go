@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"sync"
 
-	celast "github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/interpreter"
+	celast "github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/interpreter"
 )
 
 // Program is an evaluable view of an Ast.

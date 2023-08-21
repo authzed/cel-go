@@ -17,7 +17,7 @@ package types
 import (
 	"testing"
 
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 func TestType_ConvertToType(t *testing.T) {

@@ -19,11 +19,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/types/traits"
 	"google.golang.org/protobuf/proto"
 
-	anypb "google.golang.org/protobuf/types/known/anypb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestJsonListValueAdd(t *testing.T) {

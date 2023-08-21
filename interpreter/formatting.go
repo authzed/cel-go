@@ -21,8 +21,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 type typeVerifier func(int64, ...ref.Type) (bool, error)

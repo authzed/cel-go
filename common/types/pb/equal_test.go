@@ -20,8 +20,8 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
-	anypb "google.golang.org/protobuf/types/known/anypb"
+	"github.com/authzed/cel-go/test/proto3pb"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func TestEqual(t *testing.T) {

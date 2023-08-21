@@ -14,7 +14,7 @@
 
 package traits
 
-import "github.com/google/cel-go/common/types/ref"
+import "github.com/authzed/cel-go/common/types/ref"
 
 // Container interface which permits containment tests such as 'a in b'.
 type Container interface {

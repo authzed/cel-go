@@ -23,15 +23,15 @@ import (
 	"strings"
 	"sync"
 
-	antlr "github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/runes"
-	"github.com/google/cel-go/parser/gen"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/runes"
+	"github.com/authzed/cel-go/parser/gen"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // Parser encapsulates the context necessary to perform parsing for different expressions.
