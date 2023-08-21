@@ -17,7 +17,7 @@ go_library(
         "sets.go",
         "strings.go",
     ],
-    importpath = "github.com/google/cel-go/ext",
+    importpath = "github.com/authzed/cel-go/ext",
     visibility = ["//visibility:public"],
     deps = [
         "//cel:go_default_library",

@@ -19,9 +19,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 
 	test2pb "github.com/google/cel-spec/proto/test/v1/proto2/test_all_types"
 	test3pb "github.com/google/cel-spec/proto/test/v1/proto3/test_all_types"
@@ -29,7 +29,7 @@ import (
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	codepb "google.golang.org/genproto/googleapis/rpc/code"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
-	anypb "google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ConformanceServer contains the server state.

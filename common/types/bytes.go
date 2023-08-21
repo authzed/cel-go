@@ -21,11 +21,11 @@ import (
 	"reflect"
 	"unicode/utf8"
 
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 
-	anypb "google.golang.org/protobuf/types/known/anypb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Bytes type that implements ref.Val and supports add, compare, and size

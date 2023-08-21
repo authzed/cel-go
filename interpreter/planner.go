@@ -18,11 +18,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/types"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/functions"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/types"
 )
 
 // interpretablePlanner creates an Interpretable evaluation plan from a proto Expr value.

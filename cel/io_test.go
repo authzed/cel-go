@@ -21,11 +21,12 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/google/cel-go/checker/decls"
-	"github.com/google/cel-go/common/types"
+	"github.com/authzed/cel-go/checker/decls"
+	"github.com/authzed/cel-go/common/types"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+
+	"github.com/authzed/cel-go/test/proto3pb"
 )
 
 func TestRefValueToValueRoundTrip(t *testing.T) {

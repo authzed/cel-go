@@ -17,12 +17,12 @@ package parser
 import (
 	"sync"
 
-	antlr "github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 type parserHelper struct {

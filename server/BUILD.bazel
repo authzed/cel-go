@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "server.go",
     ],
-    importpath = "github.com/google/cel-go/server",
+    importpath = "github.com/authzed/cel-go/server",
     deps = [
         "//cel:go_default_library",
         "//common/types:go_default_library",

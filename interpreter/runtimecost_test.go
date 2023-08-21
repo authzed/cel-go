@@ -22,16 +22,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/parser"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/parser"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	"github.com/authzed/cel-go/test/proto3pb"
 )
 
 func TestTrackCostAdvanced(t *testing.T) {
@@ -159,9 +159,9 @@ func computeCost(t *testing.T, expr string, vars []*decls.VariableDecl, ctx Acti
 	}()
 	prg.Eval(ctx)
 	// TODO: enable this once all attributes are properly pushed and popped from stack.
-	//if len(costTracker.stack) != 1 {
+	// if len(costTracker.stack) != 1 {
 	//	t.Fatalf(`Expected resulting stack size to be 1 but got %d: %#+v`, len(costTracker.stack), costTracker.stack)
-	//}
+	// }
 	return costTracker.cost, est, err
 }
 

@@ -15,7 +15,7 @@
 // Package functions defines the standard builtin functions supported by the interpreter
 package functions
 
-import "github.com/google/cel-go/common/types/ref"
+import "github.com/authzed/cel-go/common/types/ref"
 
 // Overload defines a named overload of a function, indicating an operand trait
 // which must be present on the first argument to the overload as well as one

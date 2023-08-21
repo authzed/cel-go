@@ -1,7 +1,7 @@
 # Common Expression Language
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/google/cel-go)](https://goreportcard.com/report/github.com/google/cel-go)
-[![GoDoc](https://godoc.org/github.com/google/cel-go?status.svg)][6]
+[![Go Report Card](https://goreportcard.com/badge/github.com/authzed/cel-go)](https://goreportcard.com/report/github.com/authzed/cel-go)
+[![GoDoc](https://godoc.org/github.com/authzed/cel-go?status.svg)][6]
 
 The Common Expression Language (CEL) is a non-Turing complete language designed
 for simplicity, speed, safety, and portability. CEL's C-like [syntax][1] looks
@@ -60,7 +60,7 @@ Let's expose `name` and  `group` variables to CEL using the `cel.Declarations`
 environment option:
 
 ```go
-import "github.com/google/cel-go/cel"
+import "github.com/authzed/cel-go/cel"
 
 env, err := cel.NewEnv(
     cel.Variable("name", cel.StringType),
@@ -286,6 +286,6 @@ Disclaimer: This is not an official Google product.
 [1]:  https://github.com/google/cel-spec
 [2]:  https://groups.google.com/forum/#!forum/cel-go-discuss
 [3]:  https://github.com/google/cel-cpp
-[4]:  https://github.com/google/cel-go/issues
+[4]:  https://github.com/authzed/cel-go/issues
 [5]:  https://bazel.build
-[6]:  https://godoc.org/github.com/google/cel-go
+[6]:  https://godoc.org/github.com/authzed/cel-go

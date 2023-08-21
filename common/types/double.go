@@ -19,11 +19,11 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 
-	anypb "google.golang.org/protobuf/types/known/anypb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Double type that implements ref.Val, comparison, and mathematical

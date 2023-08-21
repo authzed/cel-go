@@ -19,12 +19,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
 )
 
 func TestASTCopy(t *testing.T) {
