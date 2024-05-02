@@ -6,7 +6,7 @@ Evaluate expression `"Hello world! I'm " + name + "."` with `CEL` passed as
 name.
 
 ```go
-import "github.com/google/cel-go/cel"
+import "github.com/authzed/cel-go/cel"
 
     env, err := cel.NewEnv(cel.Variable("name", cel.StringType))
     // Check err for environment setup errors.
@@ -69,6 +69,7 @@ method.
     fmt.Println(out)
     // Output:Hello world! Nice to meet you, I'm CEL.
 ```
+
 [Source code](custom_instance_function_test.go)
 
 ## Define custom global function
@@ -112,4 +113,4 @@ of `MemberOverload` in the `Function` option:
 [Source code](custom_global_function_test.go)
 
 For more examples of how to use CEL, see
-[cel_test.go](https://github.com/google/cel-go/tree/master/cel/cel_test.go).
+[cel_test.go](https://github.com/authzed/cel-go/tree/master/cel/cel_test.go).

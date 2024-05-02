@@ -1,7 +1,7 @@
 # Common Expression Language
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/google/cel-go)](https://goreportcard.com/report/github.com/google/cel-go)
-[![GoDoc](https://godoc.org/github.com/google/cel-go?status.svg)][6]
+[![Go Report Card](https://goreportcard.com/badge/github.com/authzed/cel-go)](https://goreportcard.com/report/github.com/authzed/cel-go)
+[![GoDoc](https://godoc.org/github.com/authzed/cel-go?status.svg)][6]
 
 The Common Expression Language (CEL) is a non-Turing complete language designed
 for simplicity, speed, safety, and portability. CEL's C-like [syntax][1] looks
@@ -19,7 +19,7 @@ request.time - resource.age < duration("24h")
 
 ```typescript
 // Check whether all resource names in a list match a given filter.
-auth.claims.email_verified && resources.all(r, r.startsWith(auth.claims.email))
+auth.claims.email_verified && resources.all(r, r.startsWith(auth.claims.email));
 ```
 
 A CEL "program" is a single expression. The examples have been tagged as
@@ -35,16 +35,16 @@ A dashboard that shows results of cel-go conformance tests can be found
 
 ---
 
-* [Overview](#overview)
-  * [Environment Setup](#environment-setup)
-  * [Parse and Check](#parse-and-check)
-  * [Macros](#macros)
-  * [Evaluate](#evaluate)
-  * [Errors](#Errors)
-* [Examples](examples/README.md)
-* [Install](#install)
-* [Common Questions](#common-questions)
-* [License](#license)
+- [Overview](#overview)
+  - [Environment Setup](#environment-setup)
+  - [Parse and Check](#parse-and-check)
+  - [Macros](#macros)
+  - [Evaluate](#evaluate)
+  - [Errors](#Errors)
+- [Examples](examples/README.md)
+- [Install](#install)
+- [Common Questions](#common-questions)
+- [License](#license)
 
 ---
 
@@ -56,11 +56,11 @@ against some input. Checking is optional, but strongly encouraged.
 
 ### Environment Setup
 
-Let's expose `name` and  `group` variables to CEL using the `cel.Declarations`
+Let's expose `name` and `group` variables to CEL using the `cel.Declarations`
 environment option:
 
 ```go
-import "github.com/google/cel-go/cel"
+import "github.com/authzed/cel-go/cel"
 
 env, err := cel.NewEnv(
     cel.Variable("name", cel.StringType),
@@ -116,7 +116,7 @@ list and map values.
 
 ```javascript
 // Ensure all tweets are less than 140 chars
-tweets.all(t, t.size() <= 140)
+tweets.all(t, t.size() <= 140);
 ```
 
 The `has` macro is useful for unifying field presence testing logic across
@@ -125,7 +125,7 @@ protobuf types and dynamic (JSON-like) types.
 ```javascript
 // Test whether the field is a non-default value if proto-based, or defined
 // in the JSON case.
-has(message.field)
+has(message.field);
 ```
 
 Both cases traditionally require special syntax at the language level, but
@@ -170,22 +170,22 @@ unknown values, with the `?` indicating that the branch is not taken due to
 short-circuiting. When the result is `<x, y>` this means that the both args
 are possibly relevant to the result.
 
-| Expression          | Result   |
-|---------------------|----------|
-| `false && ?`        | `false`  |
-| `true && false`     | `false`  |
-| `<x> && false`      | `false`  |
-| `true && true`      | `true`   |
-| `true && <x>`       | `<x>`    |
-| `<x> && true`       | `<x>`    |
-| `<x> && <y>`        | `<x, y>` |
-| `true \|\| ?`       | `true`   |
-| `false \|\| true`   | `true`   |
-| `<x> \|\| true`     | `true`   |
-| `false \|\| false`  | `false`  |
-| `false \|\| <x>`    | `<x>`    |
-| `<x> \|\| false`    | `<x>`    |
-| `<x> \|\| <y>`      | `<x, y>` |
+| Expression         | Result   |
+| ------------------ | -------- |
+| `false && ?`       | `false`  |
+| `true && false`    | `false`  |
+| `<x> && false`     | `false`  |
+| `true && true`     | `true`   |
+| `true && <x>`      | `<x>`    |
+| `<x> && true`      | `<x>`    |
+| `<x> && <y>`       | `<x, y>` |
+| `true \|\| ?`      | `true`   |
+| `false \|\| true`  | `true`   |
+| `<x> \|\| true`    | `true`   |
+| `false \|\| false` | `false`  |
+| `false \|\| <x>`   | `<x>`    |
+| `<x> \|\| false`   | `<x>`    |
+| `<x> \|\| <y>`     | `<x, y>` |
 
 In the cases where unknowns are expected, `cel.EvalOptions(cel.OptTrackState)`
 should be enabled. The `details` value returned by `Eval()` will contain the
@@ -253,19 +253,19 @@ runtime bindings and error handling to do the right thing.
 
 ### Where can I learn more about the language?
 
-* See the [CEL Spec][1] for the specification and conformance test suite.
-* Ask for support on the [CEL Go Discuss][2] Google group.
+- See the [CEL Spec][1] for the specification and conformance test suite.
+- Ask for support on the [CEL Go Discuss][2] Google group.
 
 ### Where can I learn more about the internals?
 
-* See [GoDoc][6] to learn how to integrate CEL into services written in Go.
-* See the [CEL C++][3] toolchain (under development) for information about how
+- See [GoDoc][6] to learn how to integrate CEL into services written in Go.
+- See the [CEL C++][3] toolchain (under development) for information about how
   to integrate CEL evaluation into other environments.
 
 ### How can I contribute?
 
-* See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started.
-* Use [GitHub Issues][4] to request features or report bugs.
+- See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started.
+- Use [GitHub Issues][4] to request features or report bugs.
 
 ### Some tests don't work with `go test`?
 
@@ -283,9 +283,9 @@ Released under the [Apache License](LICENSE).
 
 Disclaimer: This is not an official Google product.
 
-[1]:  https://github.com/google/cel-spec
-[2]:  https://groups.google.com/forum/#!forum/cel-go-discuss
-[3]:  https://github.com/google/cel-cpp
-[4]:  https://github.com/google/cel-go/issues
-[5]:  https://bazel.build
-[6]:  https://godoc.org/github.com/google/cel-go
+[1]: https://github.com/google/cel-spec
+[2]: https://groups.google.com/forum/#!forum/cel-go-discuss
+[3]: https://github.com/google/cel-cpp
+[4]: https://github.com/authzed/cel-go/issues
+[5]: https://bazel.build
+[6]: https://godoc.org/github.com/authzed/cel-go

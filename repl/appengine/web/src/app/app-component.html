@@ -17,10 +17,16 @@
 <!-- Toolbar -->
 <div class="toolbar" role="banner">
   <span>CEL REPL</span>
-    <div class="spacer"></div>
-    <a aria-label="CEL Go on Github" target="_blank" rel="noopener" href="https://github.com/google/cel-go" title="CEL Go Github">
-      <img class="github-logo" src="assets/github.svg" alt="github logo"/>
-    </a>
+  <div class="spacer"></div>
+  <a
+    aria-label="CEL Go on Github"
+    target="_blank"
+    rel="noopener"
+    href="https://github.com/authzed/cel-go"
+    title="CEL Go Github"
+  >
+    <img class="github-logo" src="assets/github.svg" alt="github logo" />
+  </a>
 </div>
 
 <mat-sidenav-container role="main" class="content" autosize>
@@ -36,10 +42,14 @@
         <app-repl-console></app-repl-console>
       </div>
       <div class="control-button-bar">
-        <button mat-raised-button (click)="submitConsole()" color="primary">Evaluate</button> &nbsp;
-        <button mat-raised-button (click)="sidenav.toggle()" color="primary">Show / Hide References</button>
+        <button mat-raised-button (click)="submitConsole()" color="primary">
+          Evaluate
+        </button>
+        &nbsp;
+        <button mat-raised-button (click)="sidenav.toggle()" color="primary">
+          Show / Hide References
+        </button>
       </div>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
-

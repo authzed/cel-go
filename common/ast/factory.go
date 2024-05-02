@@ -14,7 +14,7 @@
 
 package ast
 
-import "github.com/google/cel-go/common/types/ref"
+import "github.com/authzed/cel-go/common/types/ref"
 
 // ExprFactory interfaces defines a set of methods necessary for building native expression values.
 type ExprFactory interface {

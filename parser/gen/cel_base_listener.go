@@ -1,4 +1,4 @@
-// Code generated from /usr/local/google/home/tswadell/go/src/github.com/google/cel-go/parser/gen/CEL.g4 by ANTLR 4.13.1. DO NOT EDIT.
+// Code generated from /usr/local/google/home/tswadell/go/src/github.com/authzed/cel-go/parser/gen/CEL.g4 by ANTLR 4.13.1. DO NOT EDIT.
 
 package gen // CEL
 import "github.com/antlr4-go/antlr/v4"

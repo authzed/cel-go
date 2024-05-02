@@ -26,7 +26,7 @@ go_library(
         "evaluator.go",
         "typefmt.go",
     ],
-    importpath = "github.com/google/cel-go/repl",
+    importpath = "github.com/authzed/cel-go/repl",
     deps = [
         "//cel:go_default_library",
         "//checker/decls:go_default_library",
