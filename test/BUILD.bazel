@@ -19,7 +19,7 @@ go_library(
         "compare.go",
         "expr.go",
     ],
-    importpath = "github.com/google/cel-go/test",
+    importpath = "github.com/authzed/cel-go/test",
     deps = [
         "//common/operators:go_default_library",
         "@org_golang_google_genproto_googleapis_api//expr/v1alpha1:go_default_library",

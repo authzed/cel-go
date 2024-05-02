@@ -15,8 +15,8 @@
 package ext
 
 import (
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/ast"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/ast"
 )
 
 // Protos returns a cel.EnvOption to configure extended macros and functions for

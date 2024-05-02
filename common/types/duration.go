@@ -20,8 +20,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types/ref"
 
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	dpb "google.golang.org/protobuf/types/known/durationpb"

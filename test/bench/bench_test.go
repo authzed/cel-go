@@ -17,7 +17,7 @@ package bench
 import (
 	"testing"
 
-	"github.com/google/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 func BenchmarkReferenceCases(b *testing.B) {

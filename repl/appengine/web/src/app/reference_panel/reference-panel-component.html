@@ -17,46 +17,60 @@
 <h1>References</h1>
 
 <mat-accordion multi>
-    <mat-expansion-panel [expanded]="true">
-        <mat-expansion-panel-header>
-        <mat-panel-title>
-            CEL Specification
-        </mat-panel-title>
-        </mat-expansion-panel-header>
-        <p>See <a href="https://github.com/google/cel-spec">github.com/google/cel-spec</a> for CEL language
-            overview.</p>
-    </mat-expansion-panel>
-    <mat-expansion-panel [expanded]="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-            REPL Syntax
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <p>See <a href="https://github.com/google/cel-go/tree/master/repl/main">github.com/google/cel-go/tree/master/repl/main</a>
-            for REPL syntax guide.</p>
-    </mat-expansion-panel >
-    <mat-expansion-panel [expanded]="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-            Examples
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <p>Standard features</p>
-        <mat-action-list>
-            <button mat-list-item (click)="startExample('hello-world')">Hello World!</button>
-            <button mat-list-item (click)="startExample('variables')">Variables</button>
-            <button mat-list-item (click)="startExample('errors')">Errors</button>
-            <button mat-list-item (click)="startExample('extension-functions')">Extension Functions</button>
-            <button mat-list-item (click)="startExample('json')">JSON</button>
-            <button mat-list-item (click)="startExample('structs')">Structs (protobuf)</button>
-            <button mat-list-item (click)="startExample('macros')">Macros</button>
-        </mat-action-list>
-        <p>Canonical Extensions</p>
-        <mat-action-list>
-            <button mat-list-item (click)="startExample('optionals')">Optionals</button>
-            <button mat-list-item (click)="startExample('strings')">Strings</button>
-            <button mat-list-item (click)="startExample('math')">Math</button>
-            <button mat-list-item (click)="startExample('bind')">Bind</button>
-        </mat-action-list>
-    </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title> CEL Specification </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>
+      See
+      <a href="https://github.com/google/cel-spec"
+        >github.com/google/cel-spec</a
+      >
+      for CEL language overview.
+    </p>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title> REPL Syntax </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>
+      See
+      <a href="https://github.com/authzed/cel-go/tree/master/repl/main"
+        >github.com/authzed/cel-go/tree/master/repl/main</a
+      >
+      for REPL syntax guide.
+    </p>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title> Examples </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>Standard features</p>
+    <mat-action-list>
+      <button mat-list-item (click)="startExample('hello-world')">
+        Hello World!
+      </button>
+      <button mat-list-item (click)="startExample('variables')">
+        Variables
+      </button>
+      <button mat-list-item (click)="startExample('errors')">Errors</button>
+      <button mat-list-item (click)="startExample('extension-functions')">
+        Extension Functions
+      </button>
+      <button mat-list-item (click)="startExample('json')">JSON</button>
+      <button mat-list-item (click)="startExample('structs')">
+        Structs (protobuf)
+      </button>
+      <button mat-list-item (click)="startExample('macros')">Macros</button>
+    </mat-action-list>
+    <p>Canonical Extensions</p>
+    <mat-action-list>
+      <button mat-list-item (click)="startExample('optionals')">
+        Optionals
+      </button>
+      <button mat-list-item (click)="startExample('strings')">Strings</button>
+      <button mat-list-item (click)="startExample('math')">Math</button>
+      <button mat-list-item (click)="startExample('bind')">Bind</button>
+    </mat-action-list>
+  </mat-expansion-panel>
 </mat-accordion>

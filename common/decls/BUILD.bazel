@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "decls.go",
     ],
-    importpath = "github.com/google/cel-go/common/decls",
+    importpath = "github.com/authzed/cel-go/common/decls",
     deps = [
         "//checker/decls:go_default_library",
         "//common/functions:go_default_library",

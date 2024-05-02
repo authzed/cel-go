@@ -15,7 +15,7 @@
 package traits
 
 import (
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // Indexer permits random access of elements by index 'a[b()]'.

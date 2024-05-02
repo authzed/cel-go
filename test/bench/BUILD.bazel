@@ -9,7 +9,7 @@ go_library(
     srcs = [
         "bench.go",
     ],
-    importpath = "github.com/google/cel-go/test/bench",
+    importpath = "github.com/authzed/cel-go/test/bench",
     deps = [
         "//cel:go_default_library",
         "//ext:go_default_library",

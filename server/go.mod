@@ -1,9 +1,9 @@
-module github.com/google/cel-go/server
+module github.com/authzed/cel-go/server
 
 go 1.18
 
 require (
-	github.com/google/cel-go v0.13.0
+	github.com/authzed/cel-go v0.13.0
 	github.com/google/cel-spec v0.14.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20230803162519-f966b187b2e5
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230803162519-f966b187b2e5
@@ -22,4 +22,4 @@ require (
 	google.golang.org/grpc v1.57.1 // indirect
 )
 
-replace github.com/google/cel-go => ./..
+replace github.com/authzed/cel-go => ./..

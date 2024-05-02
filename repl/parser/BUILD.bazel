@@ -23,7 +23,7 @@ go_library(
     name = "go_default_library",
     srcs = glob(["*.go"], exclude=["*_test.go"]),
     data = glob(["*.tokens"]),
-    importpath = "github.com/google/cel-go/repl/parser",
+    importpath = "github.com/authzed/cel-go/repl/parser",
     deps = [
         "@com_github_antlr4_go_antlr_v4//:go_default_library",
     ],

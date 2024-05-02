@@ -10,7 +10,7 @@ go_library(
     srcs = [ 
         "functions.go",
     ],
-    importpath = "github.com/google/cel-go/interpreter/functions",
+    importpath = "github.com/authzed/cel-go/interpreter/functions",
     deps = [
         "//common/functions:go_default_library",
     ],
