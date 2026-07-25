@@ -3700,6 +3700,92 @@ func TestParserExpressionSizeLimit(t *testing.T) {
 	}
 }
 
+func TestExpressionNodeLimit(t *testing.T) {
+	tests := []struct {
+		name         string
+		expr         string
+		limit        int
+		expectErr    bool
+		errSubstring string
+	}{
+		{
+			name:      "single optMap within limit",
+			expr:      "x.optMap(a, a + 1)",
+			limit:     500,
+			expectErr: false,
+		},
+		{
+			name:         "chained optMap exceeding configured limit",
+			expr:         "x.optMap(a, a + 1).optMap(b, b + 1).optMap(c, c + 1).optMap(d, d + 1).optMap(e, e + 1).optMap(f, f + 1)",
+			limit:        100,
+			expectErr:    true,
+			errSubstring: "expression count exceeds limit of 100 while expanding macro 'optMap'",
+		},
+		{
+			name:         "chained optMap of various complexity exceeding default limit",
+			expr:         "x.optMap(a, [a, a]).optMap(b, {b: b}).optMap(c, c + 1).optMap(d, d + 2).optMap(e, e + 3).optMap(f, f + 4).optMap(g, g + 5).optMap(h, h + 6).optMap(i, i + 7).optMap(j, j + 8).optMap(k, k + 9).optMap(l, l + 10).optMap(m, m + 11).optMap(n, n + 12)",
+			limit:        0, // default limit 100,000
+			expectErr:    true,
+			errSubstring: "expression count exceeds limit of 100000 while expanding macro 'optMap'",
+		},
+		{
+			name:      "chained optMap with unbounded limit (-1)",
+			expr:      "x.optMap(a, a + 1).optMap(b, b + 1).optMap(c, c + 1).optMap(d, d + 1).optMap(e, e + 1).optMap(f, f + 1)",
+			limit:     -1,
+			expectErr: false,
+		},
+	}
+
+	for _, tst := range tests {
+		tc := tst
+		t.Run(tc.name, func(t *testing.T) {
+			opts := []EnvOption{
+				OptionalTypes(),
+				Variable("x", OptionalType(IntType)),
+			}
+			if tc.limit != 0 {
+				opts = append(opts, ExpressionNodeLimit(tc.limit))
+			}
+			env := testEnv(t, opts...)
+			_, iss := env.Parse(tc.expr)
+			if tc.expectErr {
+				if iss.Err() == nil {
+					t.Fatalf("Parse(%q) succeeded, expected error containing %q", tc.expr, tc.errSubstring)
+				}
+				if !strings.Contains(iss.Err().Error(), tc.errSubstring) {
+					t.Errorf("Parse(%q) got error %v, expected substring %q", tc.expr, iss.Err(), tc.errSubstring)
+				}
+			} else {
+				if iss.Err() != nil {
+					t.Errorf("Parse(%q) unexpectedly failed: %v", tc.expr, iss.Err())
+				}
+			}
+		})
+	}
+}
+
+func TestExpressionNodeLimitCheck(t *testing.T) {
+	env, err := NewEnv(ExpressionNodeLimit(5), Variable("x", IntType))
+	if err != nil {
+		t.Fatalf("NewEnv() failed: %v", err)
+	}
+	parseEnv, err := NewEnv(ExpressionNodeLimit(-1), Variable("x", IntType))
+	if err != nil {
+		t.Fatalf("NewEnv() failed: %v", err)
+	}
+	ast, iss := parseEnv.Parse("x + 1 + 2 + 3 + 4 + 5")
+	if iss.Err() != nil {
+		t.Fatalf("Parse() failed: %v", iss.Err())
+	}
+	_, iss = env.Check(ast)
+	if iss.Err() == nil {
+		t.Fatal("Check() succeeded, expected node count limit error")
+	}
+	if !strings.Contains(iss.Err().Error(), "expression node count exceeds limit") {
+		t.Errorf("Check() got error %v, expected node count limit error", iss.Err())
+	}
+}
+
 func BenchmarkOptionalValues(b *testing.B) {
 	env := testEnv(b,
 		OptionalTypes(),
