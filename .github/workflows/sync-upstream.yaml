@@ -1,0 +1,81 @@
+name: Sync with upstream
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out fork
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # all history
+
+      # Deliberately not `go-version-file: go.mod`, which ci.yaml does use.
+      # The sync rewrites go.mod partway through this job, so the version read
+      # beforehand is the wrong one: today it says `go 1.18`, and after the
+      # merge it says `go 1.23.0`. Go 1.18 cannot even parse that -- the
+      # patch-suffixed form only became legal in 1.21 -- so the verify step at
+      # the end of the sync fails. Install a current Go instead, which builds
+      # both the before and after states.
+      #
+      # Caching is off for the same reason: its key comes from the go.sum that
+      # exists before the sync, so the entry it saved would describe the wrong
+      # dependency set.
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Sync with upstream and verify
+        env:
+          # setup-go pins GOTOOLCHAIN=local. Allow the download instead, so a
+          # future upstream bump past `stable` fetches what go.mod asks for
+          # rather than failing.
+          GOTOOLCHAIN: auto
+          # Build here, but leave testing to ci.yaml, which runs on the PR this
+          # job opens and does it better (`-race -count=1`). Testing in both
+          # places means a single flaky test aborts the job before the PR
+          # exists, so nobody can see what failed or decide what to do about
+          # it. A red check on an open PR is the better outcome: the human who
+          # has to approve it sees the failure and judges it.
+          NO_TEST: "1"
+        run: .github/workflows/sync-upstream.sh
+
+      - name: Record upstream revision
+        run: echo "UPSTREAM_SHA=$(git rev-parse --short upstream/master)" >> "$GITHUB_ENV"
+
+      # merge-commit, never squash: the merge commit from the sync is what
+      # advances `git merge-base master upstream/master`, and that is what keeps
+      # the next sync conflict-free.
+      - name: Create Pull Request
+        id: cpr-sync
+        uses: peter-evans/create-pull-request@v8
+        with:
+          delete-branch: "true"
+          token: ${{ secrets.AUTHZEDBOT_REPO_SCOPED_TOKEN }}
+          branch: sync-upstream
+          title: "Sync with upstream ${{ env.UPSTREAM_SHA }}"
+          body: |-
+            Automatically Generated Pull Request
+
+            Synced with upstream `cel-expr/cel-go@${{ env.UPSTREAM_SHA }}`:
+
+            1. Reverted the `authzed` import rename
+            2. Merged `upstream/master`
+            3. Re-applied the rename
+            4. Verified `go build` in every Go module
+
+            Tests are not run by the sync job; CI runs them on this PR.
+
+            The result is upstream plus the import-path rename and nothing else.
+
+            > [!IMPORTANT]
+            > Merge this with a **merge commit**, not a squash. The merge commit is
+            > what advances `git merge-base master upstream/master`, which is what
+            > keeps the next sync conflict-free.
