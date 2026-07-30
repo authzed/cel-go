@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/google/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 // Example_cel_TypeConversions showcases type casting functions (int, uint, double, string, bytes, dyn)

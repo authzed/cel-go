@@ -11,7 +11,7 @@ go_library(
         "provider.go",
         "reference.go",
     ],
-    importpath = "github.com/google/cel-go/common/types/ref",
+    importpath = "github.com/authzed/cel-go/common/types/ref",
     deps = [
         "@org_golang_google_genproto_googleapis_api//expr/v1alpha1:go_default_library",
         "@org_golang_google_protobuf//proto:go_default_library",

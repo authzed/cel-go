@@ -18,8 +18,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/google/cel-go/policy"
-	"github.com/google/cel-go/tools/celtest"
+	"github.com/authzed/cel-go/policy"
+	"github.com/authzed/cel-go/tools/celtest"
 )
 
 // TestK8sCEL triggers compilation and test execution of a k8s policy which

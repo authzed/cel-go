@@ -15,7 +15,7 @@
 package common
 
 import (
-	"github.com/google/cel-go/common/runes"
+	"github.com/authzed/cel-go/common/runes"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

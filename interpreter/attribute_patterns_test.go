@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/types"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/types"
 )
 
 // attr describes a simplified format for specifying common Attribute and Qualifier values for

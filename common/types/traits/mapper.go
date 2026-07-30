@@ -14,7 +14,7 @@
 
 package traits
 
-import "github.com/google/cel-go/common/types/ref"
+import "github.com/authzed/cel-go/common/types/ref"
 
 // Mapper interface which aggregates the traits of a maps.
 type Mapper interface {

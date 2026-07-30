@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/test/proto3pb"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/test/proto3pb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
