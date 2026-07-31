@@ -22,39 +22,18 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      # This repo uses bazel as a task runner
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          # Avoid downloading Bazel every time.
+          bazelisk-cache: true
+          # Store build cache per workflow.
+          disk-cache: ${{ github.workflow }}
+          # Share repository cache between workflows.
+          repository-cache: true
+
       - name: Build
-        run: go build ./...
+        run: bazel build ...
 
       - name: Test
-        run: go test -race -count=1 ./...
-
-      # This repo holds several Go modules, each with its own go.mod, and
-      # `go build ./...` never crosses a module boundary. The two steps above
-      # therefore cover only the root module; this one covers the rest.
-      #
-      # The set of modules is discovered rather than written out, because it
-      # differs on either side of an upstream sync. Right now this fork has
-      # codelab, repl, repl/appengine and server, while current upstream has
-      # codelab, conformance, policy, repl and tools. A hardcoded list breaks
-      # every time that changes.
-      #
-      # Three are skipped because they do not build against unmodified upstream
-      # cel-go either, so building them would report upstream's breakage as
-      # ours:
-      #
-      #   repl    - its go.mod replaces cel.dev/expr with ../../cel-spec, a
-      #             sibling checkout that does not exist on a CI runner
-      #   codelab - stale go.mod; `go mod tidy` is needed before it builds
-      #   tools   - does not compile against the version of the policy module
-      #             that it pins
-      - name: Build other Go modules
-        run: |
-          skip="repl codelab tools"
-          for m in $(git ls-files '*/go.mod' | sed 's|/go.mod$||' | sort -u); do
-            case " $skip " in
-              *" $m "*) echo "skipping $m"; continue ;;
-            esac
-            echo "::group::go build ./... ($m)"
-            (cd "$m" && go build ./...)
-            echo "::endgroup::"
-          done
+        run: bazel test ...
