@@ -18,11 +18,11 @@ import (
 	"errors"
 	"math"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 )
 
 // WARNING: Any changes to cost calculations in this file require a corresponding change in checker/cost.go

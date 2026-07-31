@@ -1,4 +1,4 @@
-module github.com/google/cel-go/codelab
+module github.com/authzed/cel-go/codelab
 
 go 1.22.0
 
@@ -6,7 +6,7 @@ toolchain go1.22.5
 
 require (
 	github.com/golang/glog v1.2.4
-	github.com/google/cel-go v0.21.0
+	github.com/authzed/cel-go v0.21.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7
 	google.golang.org/protobuf v1.34.2
 )
@@ -19,4 +19,4 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7 // indirect
 )
 
-replace github.com/google/cel-go => ../.
+replace github.com/authzed/cel-go => ../.

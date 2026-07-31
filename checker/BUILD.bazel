@@ -18,7 +18,7 @@ go_library(
         "scopes.go",
         "types.go",
     ],
-    importpath = "github.com/google/cel-go/checker",
+    importpath = "github.com/authzed/cel-go/checker",
     visibility = ["//visibility:public"],
     deps = [
         "//checker/decls:go_default_library",

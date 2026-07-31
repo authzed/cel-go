@@ -19,8 +19,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
 )
 
 func TestRegex(t *testing.T) {

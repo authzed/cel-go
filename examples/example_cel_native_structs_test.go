@@ -19,8 +19,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/ext"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/ext"
 )
 
 type User struct {

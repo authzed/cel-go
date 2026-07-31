@@ -20,8 +20,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/env"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/env"
 	"github.com/google/go-cmp/cmp"
 
 	"google.golang.org/protobuf/proto"

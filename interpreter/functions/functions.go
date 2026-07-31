@@ -16,7 +16,7 @@
 // interpreter and as declared within the checker#StandardDeclarations.
 package functions
 
-import fn "github.com/google/cel-go/common/functions"
+import fn "github.com/authzed/cel-go/common/functions"
 
 // Overload defines a named overload of a function, indicating an operand trait
 // which must be present on the first argument to the overload as well as one

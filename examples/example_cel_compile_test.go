@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/ext"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/ext"
 )
 
 // Example_cel_Compile showcases compiling a CEL expression with variable declarations
