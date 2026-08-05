@@ -122,11 +122,18 @@ func (t *NativeType) Adapt(adapter Adapter, value any) ref.Val {
 	if value == nil {
 		return NullValue
 	}
+	refVal := reflect.ValueOf(value)
+	if refVal.Kind() == reflect.Ptr {
+		if refVal.IsNil() {
+			return NullValue
+		}
+		refVal = refVal.Elem()
+	}
 	return &nativeObj{
 		Adapter:  adapter,
 		val:      value,
 		valType:  t,
-		refValue: reflect.ValueOf(value),
+		refValue: refVal,
 	}
 }
 
@@ -248,13 +255,16 @@ type nativeObj struct {
 
 func (o *nativeObj) ConvertToNative(typeDesc reflect.Type) (any, error) {
 	if o.refValue.Type() == typeDesc {
-		return o.val, nil
-	}
-	if o.refValue.Kind() == reflect.Pointer && o.refValue.Type().Elem() == typeDesc {
-		return o.refValue.Elem().Interface(), nil
+		if reflect.TypeOf(o.val) == typeDesc {
+			return o.val, nil
+		}
+		return o.refValue.Interface(), nil
 	}
 	if typeDesc.Kind() == reflect.Pointer && o.refValue.Type() == typeDesc.Elem() {
-		ptr := reflect.New(typeDesc.Elem())
+		if reflect.TypeOf(o.val) == typeDesc {
+			return o.val, nil
+		}
+		ptr := reflect.New(o.refValue.Type())
 		ptr.Elem().Set(o.refValue)
 		return ptr.Interface(), nil
 	}
@@ -269,7 +279,7 @@ func (o *nativeObj) ConvertToNative(typeDesc reflect.Type) (any, error) {
 		refVal := reflect.Indirect(o.refValue)
 		fields := make(map[string]*structpb.Value, refVal.NumField())
 		for fieldName, fieldType := range o.valType.fieldsByName {
-			fieldValue := refVal.FieldByIndex(fieldType.Index)
+			fieldValue := safeGetFieldByIndex(refVal, fieldType.Index)
 			if !fieldValue.IsValid() || fieldValue.IsZero() {
 				continue
 			}
@@ -304,20 +314,15 @@ func (o *nativeObj) Equal(other ref.Val) ref.Val {
 	}
 	val := o.val
 	otherVal := otherNtv.val
-	refVal := o.refValue
-	otherRefVal := otherNtv.refValue
-	if refVal.Kind() != otherRefVal.Kind() {
-		if refVal.Kind() == reflect.Pointer {
-			val = refVal.Elem().Interface()
-		} else if otherRefVal.Kind() == reflect.Pointer {
-			otherVal = otherRefVal.Elem().Interface()
-		}
+	if reflect.TypeOf(val).Kind() != reflect.TypeOf(otherVal).Kind() {
+		val = o.refValue.Interface()
+		otherVal = otherNtv.refValue.Interface()
 	}
 	return Bool(reflect.DeepEqual(val, otherVal))
 }
 
 func (o *nativeObj) IsZeroValue() bool {
-	return reflect.Indirect(o.refValue).IsZero()
+	return o.refValue.IsZero()
 }
 
 func (o *nativeObj) IsSet(field ref.Val) ref.Val {
