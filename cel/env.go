@@ -17,6 +17,7 @@ package cel
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"math"
 	"slices"
 	"strings"
@@ -150,8 +151,24 @@ type Env struct {
 	validators      []ASTValidator
 	costOptions     []checker.CostOption
 
-	funcBindOnce     sync.Once
-	functionBindings []*functions.Overload
+	// Flags for copy-on-write behavior with env.Extend.
+	funcsShared           bool
+	featuresShared        bool
+	appliedFeaturesShared bool
+	limitsShared          bool
+	libsShared            bool
+
+	parent *Env
+
+	// sharedDispatcher caches a dispatcher populated with the env's function
+	// bindings, built once and reused across every Program() constructed from
+	// this env. It is read-only after construction; each Program layers a thin
+	// child over it for per-program Functions(). Extended envs reuse the parent's
+	// dispatcher if functions are unchanged.
+	sharedDispatcher interpreter.Dispatcher
+	dispOnce         sync.Once
+	hasAsync         bool
+	dispErr          error
 
 	// Internal parser representation
 	prsr     *parser.Parser
@@ -370,20 +387,19 @@ func NewCustomEnv(opts ...EnvOption) (*Env, error) {
 		return nil, err
 	}
 	return (&Env{
-		variables:        []*decls.VariableDecl{},
-		functions:        map[string]*decls.FunctionDecl{},
-		functionBindings: []*functions.Overload{},
-		macros:           []parser.Macro{},
-		Container:        containers.DefaultContainer,
-		adapter:          registry,
-		provider:         registry,
-		features:         map[int]bool{},
-		appliedFeatures:  map[int]bool{},
-		limits:           map[limitID]int{},
-		libraries:        map[string]SingletonLibrary{},
-		validators:       []ASTValidator{},
-		progOpts:         []ProgramOption{},
-		costOptions:      []checker.CostOption{},
+		variables:       []*decls.VariableDecl{},
+		functions:       map[string]*decls.FunctionDecl{},
+		macros:          []parser.Macro{},
+		Container:       containers.DefaultContainer,
+		adapter:         registry,
+		provider:        registry,
+		features:        map[int]bool{},
+		appliedFeatures: map[int]bool{},
+		limits:          map[limitID]int{},
+		libraries:       map[string]SingletonLibrary{},
+		validators:      []ASTValidator{},
+		progOpts:        []ProgramOption{},
+		costOptions:     []checker.CostOption{},
 	}).configure(opts)
 }
 
@@ -572,26 +588,6 @@ func (e *Env) Extend(opts ...EnvOption) (*Env, error) {
 		adapter = adapterReg.Copy()
 	}
 
-	featuresCopy := make(map[int]bool, len(e.features))
-	for k, v := range e.features {
-		featuresCopy[k] = v
-	}
-	appliedFeaturesCopy := make(map[int]bool, len(e.appliedFeatures))
-	for k, v := range e.appliedFeatures {
-		appliedFeaturesCopy[k] = v
-	}
-	limitsCopy := make(map[limitID]int, len(e.limits))
-	for k, v := range e.limits {
-		limitsCopy[k] = v
-	}
-	funcsCopy := make(map[string]*decls.FunctionDecl, len(e.functions))
-	for k, v := range e.functions {
-		funcsCopy[k] = v
-	}
-	libsCopy := make(map[string]SingletonLibrary, len(e.libraries))
-	for k, v := range e.libraries {
-		libsCopy[k] = v
-	}
 	validatorsCopy := make([]ASTValidator, len(e.validators))
 	copy(validatorsCopy, e.validators)
 
@@ -599,24 +595,66 @@ func (e *Env) Extend(opts ...EnvOption) (*Env, error) {
 	copy(costOptsCopy, e.costOptions)
 
 	ext := &Env{
+		parent:          e,
 		Container:       e.Container,
 		variables:       varsCopy,
-		functions:       funcsCopy,
+		functions:       e.functions,
 		macros:          macsCopy,
 		contextProto:    e.contextProto,
 		progOpts:        progOptsCopy,
 		adapter:         adapter,
-		features:        featuresCopy,
-		limits:          limitsCopy,
-		appliedFeatures: appliedFeaturesCopy,
-		libraries:       libsCopy,
+		features:        e.features,
+		limits:          e.limits,
+		appliedFeatures: e.appliedFeatures,
+		libraries:       e.libraries,
 		validators:      validatorsCopy,
 		provider:        provider,
 		chkOpts:         chkOptsCopy,
 		prsrOpts:        prsrOptsCopy,
 		costOptions:     costOptsCopy,
+		// Copy-on-write flags.
+		funcsShared:           true,
+		featuresShared:        true,
+		limitsShared:          true,
+		appliedFeaturesShared: true,
+		libsShared:            true,
 	}
 	return ext.configure(opts)
+}
+
+func (e *Env) ensureMutableFunctions() {
+	if e.funcsShared {
+		e.functions = maps.Clone(e.functions)
+		e.funcsShared = false
+	}
+}
+
+func (e *Env) ensureMutableLibraries() {
+	if e.libsShared {
+		e.libraries = maps.Clone(e.libraries)
+		e.libsShared = false
+	}
+}
+
+func (e *Env) ensureMutableFeatures() {
+	if e.featuresShared {
+		e.features = maps.Clone(e.features)
+		e.featuresShared = false
+	}
+}
+
+func (e *Env) ensureMutableAppliedFeatures() {
+	if e.appliedFeaturesShared {
+		e.appliedFeatures = maps.Clone(e.appliedFeatures)
+		e.appliedFeaturesShared = false
+	}
+}
+
+func (e *Env) ensureMutableLimits() {
+	if e.limitsShared {
+		e.limits = maps.Clone(e.limits)
+		e.limitsShared = false
+	}
 }
 
 // HasFeature checks whether the environment enables the given feature
@@ -734,6 +772,41 @@ func (e *Env) PlanProgram(a *celast.AST, opts ...ProgramOption) (Program, error)
 		optSet = mergedOpts
 	}
 	return newProgram(e, a, optSet)
+}
+
+func (e *Env) initDispatcher() (interpreter.Dispatcher, bool, error) {
+	e.dispOnce.Do(func() {
+		if e.parent != nil && e.funcsShared {
+			// The dispatcher setup is skipped when the child has mutated the function set.
+			// As the child function set contains a copy of all parent function declarations
+			// by virtue of copy on write semantics.
+			d, hasAsync, err := e.parent.initDispatcher()
+			e.sharedDispatcher = d
+			e.hasAsync = hasAsync
+			e.dispErr = err
+			return
+		}
+		hasAsync := false
+		var bindings []*functions.Overload
+		for _, fn := range e.functions {
+			bs, err := fn.Bindings()
+			if err != nil {
+				e.dispErr = err
+				return
+			}
+			for _, b := range bs {
+				if b.Async != nil {
+					hasAsync = true
+				}
+			}
+			bindings = append(bindings, bs...)
+		}
+		d := interpreter.NewDispatcher()
+		e.dispErr = d.Add(bindings...)
+		e.sharedDispatcher = d
+		e.hasAsync = hasAsync
+	})
+	return e.sharedDispatcher, e.hasAsync, e.dispErr
 }
 
 // CELTypeAdapter returns the `types.Adapter` configured for the environment.
@@ -861,6 +934,7 @@ func (e *Env) configure(opts []EnvOption) (*Env, error) {
 	// If the default UTC timezone has been disabled, configure the legacy overloads
 	if utcTime, isSet := e.features[featureDefaultUTCTimeZone]; isSet && !utcTime {
 		if !e.appliedFeatures[featureDefaultUTCTimeZone] {
+			e.ensureMutableAppliedFeatures()
 			e.appliedFeatures[featureDefaultUTCTimeZone] = true
 			e, err = Lib(timeLegacyLibrary{})(e)
 			if err != nil {
