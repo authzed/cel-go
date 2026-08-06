@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "container.go",
     ],
-    importpath = "github.com/google/cel-go/common/containers",
+    importpath = "github.com/authzed/cel-go/common/containers",
     deps = [
         "//common/ast:go_default_library",
     ],

@@ -19,11 +19,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common/types"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common/types"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
+	proto2pb "github.com/authzed/cel-go/test/proto2pb"
 )
 
 func TestLists(t *testing.T) {

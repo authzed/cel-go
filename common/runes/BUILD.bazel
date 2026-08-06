@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "buffer.go",
     ],
-    importpath = "github.com/google/cel-go/common/runes",
+    importpath = "github.com/authzed/cel-go/common/runes",
 )
 
 go_test(

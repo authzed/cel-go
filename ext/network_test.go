@@ -19,8 +19,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
 )
 
 func TestNetwork_Success(t *testing.T) {
