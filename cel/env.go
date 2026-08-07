@@ -532,34 +532,17 @@ func (e *Env) CompileSource(src Source) (*Ast, *Issues) {
 // TypeProvider are immutable, or that their underlying implementations are based on the
 // ref.TypeRegistry which provides a Copy method which will be invoked by this method.
 func (e *Env) Extend(opts ...EnvOption) (*Env, error) {
-	chk, chkErr := e.getCheckerOrError()
-	if chkErr != nil {
+	if _, chkErr := e.getCheckerOrError(); chkErr != nil {
 		return nil, chkErr
 	}
 
-	prsrOptsCopy := make([]parser.Option, len(e.prsrOpts))
-	copy(prsrOptsCopy, e.prsrOpts)
-
-	// The type-checker is configured with Declarations. The declarations may either be provided
-	// as options which have not yet been validated, or may come from a previous checker instance
-	// whose types have already been validated.
-	chkOptsCopy := make([]checker.Option, len(e.chkOpts))
-	copy(chkOptsCopy, e.chkOpts)
-
-	// Copy the declarations if needed.
-	if chk != nil {
-		// If the type-checker has already been instantiated, then the e.declarations have been
-		// validated within the chk instance.
-		chkOptsCopy = append(chkOptsCopy, checker.ValidatedDeclarations(chk))
-	}
-	varsCopy := make([]*decls.VariableDecl, len(e.variables))
-	copy(varsCopy, e.variables)
-
-	// Copy macros and program options
-	macsCopy := make([]parser.Macro, len(e.macros))
-	progOptsCopy := make([]ProgramOption, len(e.progOpts))
-	copy(macsCopy, e.macros)
-	copy(progOptsCopy, e.progOpts)
+	prsrOptsCopy := slices.Clone(e.prsrOpts)
+	chkOptsCopy := slices.Clone(e.chkOpts)
+	varsCopy := slices.Clone(e.variables)
+	macsCopy := slices.Clone(e.macros)
+	progOptsCopy := slices.Clone(e.progOpts)
+	validatorsCopy := slices.Clone(e.validators)
+	costOptsCopy := slices.Clone(e.costOptions)
 
 	// Copy the adapter / provider if they appear to be mutable.
 	adapter := e.adapter
@@ -587,12 +570,6 @@ func (e *Env) Extend(opts ...EnvOption) (*Env, error) {
 	} else if isAdapterReg {
 		adapter = adapterReg.Copy()
 	}
-
-	validatorsCopy := make([]ASTValidator, len(e.validators))
-	copy(validatorsCopy, e.validators)
-
-	costOptsCopy := make([]checker.CostOption, len(e.costOptions))
-	copy(costOptsCopy, e.costOptions)
 
 	ext := &Env{
 		parent:          e,
@@ -687,25 +664,17 @@ func (e *Env) HasFunction(functionName string) bool {
 
 // Functions returns a shallow copy of the Functions, keyed by function name, that have been configured in the environment.
 func (e *Env) Functions() map[string]*decls.FunctionDecl {
-	shallowCopy := make(map[string]*decls.FunctionDecl, len(e.functions))
-	for nm, fn := range e.functions {
-		shallowCopy[nm] = fn
-	}
-	return shallowCopy
+	return maps.Clone(e.functions)
 }
 
 // Variables returns a shallow copy of the variables associated with the environment.
 func (e *Env) Variables() []*decls.VariableDecl {
-	shallowCopy := make([]*decls.VariableDecl, len(e.variables))
-	copy(shallowCopy, e.variables)
-	return shallowCopy
+	return slices.Clone(e.variables)
 }
 
 // Macros returns a shallow copy of macros associated with the environment.
 func (e *Env) Macros() []Macro {
-	shallowCopy := make([]Macro, len(e.macros))
-	copy(shallowCopy, e.macros)
-	return shallowCopy
+	return slices.Clone(e.macros)
 }
 
 // HasValidator returns whether a specific ASTValidator has been configured in the environment.
@@ -718,9 +687,9 @@ func (e *Env) HasValidator(name string) bool {
 	return false
 }
 
-// Validators returns the set of ASTValidators configured on the environment.
+// Validators returns a shallow copy of the set of ASTValidators configured on the environment.
 func (e *Env) Validators() []ASTValidator {
-	return e.validators[:]
+	return slices.Clone(e.validators)
 }
 
 // Parse parses the input expression value `txt` to a Ast and/or a set of Issues.
@@ -1007,6 +976,15 @@ func (e *Env) initChecker() (*checker.Env, error) {
 		chkOpts = append(chkOpts,
 			checker.JSONFieldNames(e.HasFeature(featureJSONFieldNames)))
 
+		if e.parent != nil && e.funcsShared {
+			parentChk, err := e.parent.initChecker()
+			if err != nil {
+				e.setCheckerOrError(nil, err)
+				return
+			}
+			chkOpts = append(chkOpts, checker.ValidatedDeclarations(parentChk))
+		}
+
 		ce, err := checker.NewEnv(e.Container, e.provider, chkOpts...)
 		if err != nil {
 			e.setCheckerOrError(nil, err)
@@ -1019,14 +997,16 @@ func (e *Env) initChecker() (*checker.Env, error) {
 			return
 		}
 		// Add the function declarations which are derived from the FunctionDecl instances.
-		for _, fn := range e.functions {
-			if fn.IsDeclarationDisabled() {
-				continue
-			}
-			err = ce.AddFunctions(fn)
-			if err != nil {
-				e.setCheckerOrError(nil, err)
-				return
+		if e.parent == nil || !e.funcsShared {
+			for _, fn := range e.functions {
+				if fn.IsDeclarationDisabled() {
+					continue
+				}
+				err = ce.AddFunctions(fn)
+				if err != nil {
+					e.setCheckerOrError(nil, err)
+					return
+				}
 			}
 		}
 		// Add function declarations here separately.

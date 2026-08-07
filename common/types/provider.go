@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"maps"
 	"reflect"
+	"sync/atomic"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -92,6 +93,7 @@ type Registry struct {
 	revTypeMap    map[string]*Type
 	structTypes   map[string]StructTypeDescriptor
 	reflectTypes  map[reflect.Type]StructTypeDescriptor
+	shared        atomic.Bool
 	pbdb          *pb.Db
 	provider      Provider
 	adapter       Adapter
@@ -218,15 +220,31 @@ func ComposeTypes(provider Provider, adapter Adapter, types ...any) (Provider, A
 
 // Copy copies the current state of the registry into its own memory space.
 func (p *Registry) Copy() *Registry {
-	copy := NewEmptyRegistry()
-	copy.pbdb = p.pbdb.Copy()
-	copy.provider = p.provider
-	copy.adapter = p.adapter
-	copy.nativeOptions = p.nativeOptions
-	maps.Copy(copy.revTypeMap, p.revTypeMap)
-	maps.Copy(copy.structTypes, p.structTypes)
-	maps.Copy(copy.reflectTypes, p.reflectTypes)
-	return copy
+	if p == nil {
+		return nil
+	}
+	p.shared.Store(true)
+	cpy := &Registry{
+		revTypeMap:    p.revTypeMap,
+		structTypes:   p.structTypes,
+		reflectTypes:  p.reflectTypes,
+		nativeOptions: p.nativeOptions,
+		pbdb:          p.pbdb,
+		provider:      p.provider,
+		adapter:       p.adapter,
+	}
+	cpy.shared.Store(true)
+	return cpy
+}
+
+func (p *Registry) ensureMutable() {
+	if p.shared.Load() {
+		p.revTypeMap = maps.Clone(p.revTypeMap)
+		p.structTypes = maps.Clone(p.structTypes)
+		p.reflectTypes = maps.Clone(p.reflectTypes)
+		p.pbdb = p.pbdb.Copy()
+		p.shared.Store(false)
+	}
 }
 
 // JSONFieldNames returns whether json field names are enabled in this registry.
@@ -239,6 +257,7 @@ func (p *Registry) WithJSONFieldNames(enabled bool) error {
 	if enabled == p.pbdb.JSONFieldNames() {
 		return nil
 	}
+	p.ensureMutable()
 	newDB := pb.NewDb(pb.JSONFieldNames(enabled))
 	files := p.pbdb.FileDescriptions()
 	for _, fd := range files {
@@ -447,6 +466,7 @@ func (p *Registry) NewValue(structType string, fields map[string]ref.Val) ref.Va
 
 // RegisterDescriptor registers the contents of a protocol buffer `FileDescriptor`.
 func (p *Registry) RegisterDescriptor(fileDesc protoreflect.FileDescriptor) error {
+	p.ensureMutable()
 	fd, err := p.pbdb.RegisterDescriptor(fileDesc)
 	if err != nil {
 		return err
@@ -456,6 +476,7 @@ func (p *Registry) RegisterDescriptor(fileDesc protoreflect.FileDescriptor) erro
 
 // RegisterMessage registers a protocol buffer message and its dependencies.
 func (p *Registry) RegisterMessage(message proto.Message) error {
+	p.ensureMutable()
 	fd, err := p.pbdb.RegisterMessage(message)
 	if err != nil {
 		return err
@@ -488,6 +509,7 @@ func (p *Registry) RegisterType(types ...ref.Type) error {
 			continue
 		}
 
+		p.ensureMutable()
 		typeName := t.TypeName()
 		p.revTypeMap[typeName] = celType
 		if st, ok := t.(StructTypeDescriptor); ok {
