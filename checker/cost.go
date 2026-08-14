@@ -17,11 +17,11 @@ package checker
 import (
 	"math"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/parser"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/parser"
 )
 
 // WARNING: Any changes to cost calculations in this file require a corresponding change in interpreter/runtimecost.go

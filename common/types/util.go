@@ -15,7 +15,7 @@
 package types
 
 import (
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // IsUnknownOrError returns whether the input element ref.Val is an ErrType or UnknownType.

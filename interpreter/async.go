@@ -23,9 +23,9 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/functions"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // Async extension function support.

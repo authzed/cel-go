@@ -25,11 +25,11 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
 )
 
 func TestConfig(t *testing.T) {

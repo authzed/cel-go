@@ -19,9 +19,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
 )
 
 func TestSetKindCase(t *testing.T) {

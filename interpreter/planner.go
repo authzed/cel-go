@@ -18,11 +18,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/functions"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/types"
 )
 
 // newPlanner creates an interpretablePlanner which references a Dispatcher, TypeProvider,

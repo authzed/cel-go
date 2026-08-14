@@ -17,7 +17,7 @@ package types
 import (
 	"math"
 
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 func compareDoubleInt(d Double, i Int) Int {

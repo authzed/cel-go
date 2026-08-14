@@ -15,7 +15,7 @@
 package parser
 
 import (
-	"github.com/google/cel-go/common"
+	"cel.dev/cel-go/common"
 )
 
 // parseErrors is a specialization of Errors.

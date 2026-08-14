@@ -17,8 +17,8 @@ package checker
 import (
 	"testing"
 
-	"github.com/google/cel-go/checker/decls"
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/checker/decls"
+	"cel.dev/cel-go/common/types"
 )
 
 func TestFormatType(t *testing.T) {

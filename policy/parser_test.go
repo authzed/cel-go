@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/ext"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/ext"
 	"github.com/google/go-cmp/cmp"
 	"go.yaml.in/yaml/v3"
 )

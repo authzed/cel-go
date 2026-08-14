@@ -45,7 +45,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/cel-go/repl"
+	"cel.dev/cel-go/repl"
 
 	"github.com/chzyer/readline"
 )

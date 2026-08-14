@@ -22,11 +22,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/cel/async"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/cel/async"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/functions"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 type retryableTestErr struct{}

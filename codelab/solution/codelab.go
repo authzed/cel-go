@@ -24,10 +24,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 
 	"github.com/golang/glog"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -54,7 +54,7 @@ func main() {
 //
 // Compile, eval, profit!
 func exercise1() {
-	fmt.Println("=== Exercise 1: Hello World ===\n")
+	fmt.Println("=== Exercise 1: Hello World ===")
 	// Create the standard environment.
 	env, err := cel.NewEnv()
 	if err != nil {
@@ -93,7 +93,7 @@ func exercise1() {
 // Given a `request` of type `google.rpc.context.AttributeContext.Request`
 // determine whether a specific auth claim is set.
 func exercise2() {
-	fmt.Println("=== Exercise 2: Variables ===\n")
+	fmt.Println("=== Exercise 2: Variables ===")
 	// Construct a standard environment that accepts 'request' as input and uses
 	// the google.rpc.context.AttributeContext.Request type.
 	env, err := cel.NewEnv(
@@ -125,7 +125,7 @@ func exercise2() {
 // sets the appropriate principal and occurs at 12:00 hours. Then evaluate the
 // request a second time at midnight. Observe the difference in output.
 func exercise3() {
-	fmt.Println("=== Exercise 3: Logical AND/OR ===\n")
+	fmt.Println("=== Exercise 3: Logical AND/OR ===")
 	env, _ := cel.NewEnv(
 		cel.Types(&rpcpb.AttributeContext_Request{}),
 		cel.Variable("request",
@@ -154,7 +154,7 @@ func exercise3() {
 // Declare a `contains` member function on map types that returns a boolean
 // indicating whether the map contains the key-value pair.
 func exercise4() {
-	fmt.Println("=== Exercise 4: Customization ===\n")
+	fmt.Println("=== Exercise 4: Customization ===")
 	// Determine whether an optional claim is set to the proper value. The custom
 	// map.contains(key, value) function is used as an alternative to:
 	//   key in map && map[key] == value
@@ -200,7 +200,7 @@ func exercise4() {
 //
 // Given the input `now`, construct a JWT with an expiry of 5 minutes.
 func exercise5() {
-	fmt.Println("=== Exercise 5: Building JSON ===\n")
+	fmt.Println("=== Exercise 5: Building JSON ===")
 	// Note the quoted keys in the CEL map literal. For proto messages the
 	// field names are unquoted as they represent well-defined identifiers.
 	env, _ := cel.NewEnv(
@@ -238,7 +238,7 @@ func exercise5() {
 // `google.rpc.context.AttributeContext.Request` with the `time` and `auth`
 // fields populated according to the go/api-attributes specification.
 func exercise6() {
-	fmt.Println("=== Exercise 6: Building Protos ===\n")
+	fmt.Println("=== Exercise 6: Building Protos ===")
 
 	// Construct an environment and indicate that the container for all references
 	// within the expression is `google.rpc.context.AttributeContext`.
@@ -305,7 +305,7 @@ func exercise6() {
 // with the `group` prefix, and ensure that all group-like keys have list
 // values containing only strings that end with '@acme.co`.
 func exercise7() {
-	fmt.Println("=== Exercise 7: Macros ===\n")
+	fmt.Println("=== Exercise 7: Macros ===")
 	env, _ := cel.NewEnv(cel.Variable("jwt", cel.DynType))
 	ast := compile(env,
 		`jwt.extra_claims.exists(c, c.startsWith('group'))
@@ -341,7 +341,7 @@ func exercise7() {
 // Turn on the optimization, exhaustive eval, and state tracking
 // `cel.ProgramOption` flags to see the impact on evaluation behavior.
 func exercise8() {
-	fmt.Println("=== Exercise 8: Tuning ===\n")
+	fmt.Println("=== Exercise 8: Tuning ===")
 	// Declare the `x` and 'y' variables as input into the expression.
 	env, _ := cel.NewEnv(
 		cel.Variable("x", cel.IntType),
