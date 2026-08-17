@@ -1,0 +1,41 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(
+    licenses = ["notice"],  # Apache 2.0
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "bench.go",
+    ],
+    importpath = "github.com/google/cel-go/parser/bench",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//common:go_default_library",
+        "//common/ast:go_default_library",
+        "//common/operators:go_default_library",
+        "//common/types:go_default_library",
+        "//parser:go_default_library",
+    ],
+)
+
+go_test(
+    name = "bench_test",
+    size = "small",
+    srcs = [
+        "bench_test.go",
+    ],
+    embed = [
+        ":go_default_library",
+    ],
+    deps = [
+        "//common:go_default_library",
+        "//parser:go_default_library",
+    ],
+)
+
+alias(
+    name = "go_default_test",
+    actual = ":bench_test",
+)
