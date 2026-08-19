@@ -164,6 +164,37 @@ func TestFormatCELTypeEquivalence(t *testing.T) {
 	}
 }
 
+func TestEnvExtendDisableDeclaration(t *testing.T) {
+	baseEnv, err := NewCustomEnv(
+		Function("foo",
+			Overload("foo_bool", []*Type{BoolType}, BoolType),
+		),
+	)
+	if err != nil {
+		t.Fatalf("NewCustomEnv() failed: %v", err)
+	}
+	_, iss := baseEnv.Compile("foo(true)")
+	if iss.Err() != nil {
+		t.Fatalf("baseEnv.Compile(foo(true)) failed: %v", iss.Err())
+	}
+
+	childEnv, err := baseEnv.Extend(
+		Function("foo",
+			DisableDeclaration(true),
+			Overload("foo_bool", []*Type{BoolType}, BoolType),
+		),
+	)
+	if err != nil {
+		t.Fatalf("baseEnv.Extend() failed: %v", err)
+	}
+
+	_, iss = childEnv.Compile("foo(true)")
+	if iss.Err() == nil {
+		t.Errorf("childEnv.Compile(foo(true)) succeeded, wanted error")
+	}
+}
+
+
 func TestEnvCheckExtendRace(t *testing.T) {
 	t.Parallel()
 	for i := 0; i < 500; i++ {
@@ -189,6 +220,116 @@ func TestEnvCheckExtendRace(t *testing.T) {
 	}
 }
 
+func TestEnvConcurrentExtend(t *testing.T) {
+	t.Parallel()
+	baseEnv, err := NewCustomEnv(StdLib())
+	if err != nil {
+		t.Fatalf("NewCustomEnv() failed: %v", err)
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			_, err := baseEnv.Extend(Variable(fmt.Sprintf("v%d", id), StringType))
+			if err != nil {
+				t.Errorf("Extend() failed: %v", err)
+			}
+		}(i)
+	}
+	wg.Wait()
+}
+
+func TestEnvConcurrentExtendAndCompile(t *testing.T) {
+	t.Parallel()
+	baseEnv, err := NewCustomEnv(StdLib())
+	if err != nil {
+		t.Fatalf("NewCustomEnv() failed: %v", err)
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			varName := fmt.Sprintf("v%d", id)
+			extEnv, err := baseEnv.Extend(Variable(varName, IntType))
+			if err != nil {
+				t.Errorf("Extend() failed: %v", err)
+				return
+			}
+			ast, iss := extEnv.Compile(fmt.Sprintf("%s > 0", varName))
+			if iss.Err() != nil {
+				t.Errorf("Compile() failed: %v", iss.Err())
+				return
+			}
+			prg, err := extEnv.Program(ast)
+			if err != nil {
+				t.Errorf("Program() failed: %v", err)
+				return
+			}
+			out, _, err := prg.Eval(map[string]any{varName: 10})
+			if err != nil {
+				t.Errorf("Eval() failed: %v", err)
+				return
+			}
+			if out.Value() != true {
+				t.Errorf("got %v, wanted true", out.Value())
+			}
+		}(i)
+	}
+	wg.Wait()
+}
+
+func TestEnvConcurrentExtendWithMutation(t *testing.T) {
+	t.Parallel()
+	baseEnv, err := NewCustomEnv(StdLib())
+	if err != nil {
+		t.Fatalf("NewCustomEnv() failed: %v", err)
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			fnName := fmt.Sprintf("custom_func_%d", id)
+			extEnv, err := baseEnv.Extend(
+				Function(fnName,
+					Overload(fnName+"_int", []*Type{IntType}, IntType,
+						UnaryBinding(func(val ref.Val) ref.Val {
+							return val
+						}),
+					),
+				),
+			)
+			if err != nil {
+				t.Errorf("Extend() failed: %v", err)
+				return
+			}
+			ast, iss := extEnv.Compile(fmt.Sprintf("%s(42) == 42", fnName))
+			if iss.Err() != nil {
+				t.Errorf("Compile() failed: %v", iss.Err())
+				return
+			}
+			prg, err := extEnv.Program(ast)
+			if err != nil {
+				t.Errorf("Program() failed: %v", err)
+				return
+			}
+			out, _, err := prg.Eval(NoVars())
+			if err != nil {
+				t.Errorf("Eval() failed: %v", err)
+				return
+			}
+			if out.Value() != true {
+				t.Errorf("got %v, wanted true", out.Value())
+			}
+		}(i)
+	}
+	wg.Wait()
+}
+
+
+
 func TestEnvPartialVarsError(t *testing.T) {
 	env := testEnv(t)
 	_, err := env.PartialVars(10)
@@ -198,9 +339,9 @@ func TestEnvPartialVarsError(t *testing.T) {
 }
 
 func TestTypeProviderInterop(t *testing.T) {
-	reg, err := types.NewProtoRegistry(types.ProtoTypeDefs(&proto3pb.TestAllTypes{}))
+	reg, err := types.NewRegistry(&proto3pb.TestAllTypes{})
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	tests := []struct {
 		name     string

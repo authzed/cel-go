@@ -54,7 +54,7 @@ func main() {
 //
 // Compile, eval, profit!
 func exercise1() {
-	fmt.Println("=== Exercise 1: Hello World ===\n")
+	fmt.Println("=== Exercise 1: Hello World ===")
 
 	fmt.Println()
 }
@@ -64,7 +64,7 @@ func exercise1() {
 // Given a `request` of type `google.rpc.context.AttributeContext.Request`
 // determine whether a specific auth claim is set.
 func exercise2() {
-	fmt.Println("=== Exercise 2: Variables ===\n")
+	fmt.Println("=== Exercise 2: Variables ===")
 
 	fmt.Println()
 }
@@ -79,7 +79,7 @@ func exercise2() {
 // sets the appropriate principal and occurs at 12:00 hours. Then evaluate the
 // request a second time at midnight. Observe the difference in output.
 func exercise3() {
-	fmt.Println("=== Exercise 3: Logical AND/OR ===\n")
+	fmt.Println("=== Exercise 3: Logical AND/OR ===")
 
 	fmt.Println()
 }
@@ -89,7 +89,7 @@ func exercise3() {
 // Declare a `contains` member function on map types that returns a boolean
 // indicating whether the map contains the key-value pair.
 func exercise4() {
-	fmt.Println("=== Exercise 4: Customization ===\n")
+	fmt.Println("=== Exercise 4: Customization ===")
 
 	fmt.Println()
 }
@@ -98,7 +98,7 @@ func exercise4() {
 //
 // Given the input `now`, construct a JWT with an expiry of 5 minutes.
 func exercise5() {
-	fmt.Println("=== Exercise 5: Building JSON ===\n")
+	fmt.Println("=== Exercise 5: Building JSON ===")
 
 	fmt.Println()
 }
@@ -109,7 +109,7 @@ func exercise5() {
 // `google.rpc.context.AttributeContext.Request` with the `time` and `auth`
 // fields populated according to the go/api-attributes specification.
 func exercise6() {
-	fmt.Println("=== Exercise 6: Building Protos ===\n")
+	fmt.Println("=== Exercise 6: Building Protos ===")
 
 	fmt.Println()
 }
@@ -120,7 +120,7 @@ func exercise6() {
 // with the `group` prefix, and ensure that all group-like keys have list
 // values containing only strings that end with '@acme.co`.
 func exercise7() {
-	fmt.Println("=== Exercise 7: Macros ===\n")
+	fmt.Println("=== Exercise 7: Macros ===")
 
 	fmt.Println()
 }
@@ -134,7 +134,7 @@ func exercise7() {
 // Also, turn on the homogeneous aggregate literals flag to disable
 // heterogeneous list and map literals.
 func exercise8() {
-	fmt.Println("=== Exercise 8: Tuning ===\n")
+	fmt.Println("=== Exercise 8: Tuning ===")
 
 	fmt.Println()
 }

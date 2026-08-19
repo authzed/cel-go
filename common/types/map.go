@@ -19,6 +19,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"unicode"
 
 	"google.golang.org/protobuf/proto"
@@ -142,8 +143,13 @@ type baseMap struct {
 	// value is the native Go value upon which the map type operators.
 	value any
 
-	// size is the number of entries in the map.
 	size int
+
+	// aggSize memoizes the aggregate size computed by the first completed sizing of this
+	// map. Accessed atomically since immutable maps may be shared across concurrent
+	// evaluations; zero means not yet computed. See the SizeCalculator documentation for
+	// the memoization contract.
+	aggSize uint32
 }
 
 // Contains implements the traits.Container interface method.
@@ -303,6 +309,19 @@ func (m *baseMap) Size() ref.Val {
 	return Int(m.size)
 }
 
+// AggregateSize implements the AggregateSizeVisitor interface method.
+func (m *baseMap) AggregateSize(sizer AggregateSizer) uint32 {
+	if sz := atomic.LoadUint32(&m.aggSize); sz != 0 {
+		return sz
+	}
+	f := foldableAggregateSizer{sizer: sizer, total: 1}
+	m.Fold(&f)
+	if cacheableAggregateSize(sizer) {
+		atomic.StoreUint32(&m.aggSize, f.total)
+	}
+	return f.total
+}
+
 // String converts the map into a human-readable string.
 func (m *baseMap) String() string {
 	var sb strings.Builder
@@ -380,6 +399,8 @@ func (m *mutableMap) Insert(k, v ref.Val) ref.Val {
 		return NewErr("insert failed: key %v already exists", k)
 	}
 	m.mutableValues[k] = v
+	m.size++
+	atomic.StoreUint32(&m.aggSize, 0)
 	return m
 }
 
@@ -907,6 +928,20 @@ func (m *protoMap) Fold(f traits.Folder) {
 // Size returns the number of entries in the protoreflect.Map.
 func (m *protoMap) Size() ref.Val {
 	return Int(m.value.Len())
+}
+
+// AggregateSize implements the AggregateSizeVisitor interface method.
+func (m *protoMap) AggregateSize(sizer AggregateSizer) uint32 {
+	if m.value == nil {
+		return 0
+	}
+	total := uint32(1)
+	m.value.Range(func(k protoreflect.MapKey, v protoreflect.Value) bool {
+		total = safeAddUint32(total, sizer.AggregateSize(k))
+		total = safeAddUint32(total, sizer.AggregateSize(v))
+		return true
+	})
+	return total
 }
 
 // Type implements the ref.Val interface method.

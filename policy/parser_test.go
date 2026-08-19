@@ -150,6 +150,19 @@ rule:
 rule:
   match:
     - condition: "true"
+      output: "'foo'"
+  aggregate:
+    - condition: "true"
+      output: "'bar'"`,
+			err: `ERROR: <input>:6:3: Only one of 'match' or 'aggregate' may be set in a rule
+ |   aggregate:
+ | ..^`,
+		},
+		{
+			txt: `
+rule:
+  match:
+    - condition: "true"
       rule:
         match:
           - output: "hello"
@@ -216,6 +229,30 @@ rule:
 			err: `ERROR: <input>:4:7: got yaml node type tag:yaml.org,2002:str, wanted type(s) [tag:yaml.org,2002:map]
  |     - name
  | ......^`,
+		},
+		{
+			txt: `
+name: test
+rule:
+  match:
+    - output: 'true'
+  aggregate:
+    - output: 'true'`,
+			err: `ERROR: <input>:6:3: Only one of 'match' or 'aggregate' may be set in a rule
+ |   aggregate:
+ | ..^`,
+		},
+		{
+			txt: `
+name: test
+rule:
+  aggregate:
+    - output: 'true'
+  match:
+    - output: 'true'`,
+			err: `ERROR: <input>:6:3: Only one of 'match' or 'aggregate' may be set in a rule
+ |   match:
+ | ..^`,
 		},
 	}
 
@@ -387,5 +424,38 @@ func (t *testTagHandler) PolicyTag(ctx ParserContext, id int64, tagName string, 
 		p.SetMetadata(tagName, node.Value)
 	} else {
 		p.SetMetadata(tagName, node.Value)
+	}
+}
+
+func TestPolicyAndRuleSemanticMethods(t *testing.T) {
+	p := NewPolicy(nil, nil)
+	if p.Semantic() != firstMatch {
+		t.Errorf("got %v, wanted firstMatch", p.Semantic())
+	}
+	p.SetSemantic(aggregate)
+	if p.Semantic() != aggregate {
+		t.Errorf("got %v, wanted aggregate", p.Semantic())
+	}
+	// Attempt to set conflicting semantic
+	p.SetSemantic(firstMatch)
+	if p.Semantic() != aggregate {
+		t.Errorf("got %v, wanted aggregate after conflicting SetSemantic", p.Semantic())
+	}
+
+	r := NewRule(123)
+	if r.SourceID() != 123 {
+		t.Errorf("got %v, wanted 123", r.SourceID())
+	}
+	if r.Semantic() != firstMatch {
+		t.Errorf("got %v, wanted firstMatch", r.Semantic())
+	}
+	r.SetSemantic(aggregate)
+	if r.Semantic() != aggregate {
+		t.Errorf("got %v, wanted aggregate", r.Semantic())
+	}
+	// Attempt to set conflicting semantic
+	r.SetSemantic(firstMatch)
+	if r.Semantic() != aggregate {
+		t.Errorf("got %v, wanted aggregate after conflicting SetSemantic", r.Semantic())
 	}
 }

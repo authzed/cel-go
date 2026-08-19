@@ -7,9 +7,15 @@
 #   sync-upstream.sh rename [--reverse]  # just the rename
 #
 # This fork differs from upstream in exactly one way: every
-# `github.com/google/cel-go` import is rewritten to `github.com/authzed/cel-go`.
+# `cel.dev/cel-go` import is rewritten to `github.com/authzed/cel-go`.
 # Merging upstream directly means both sides edited the same import lines, so it
 # conflicts on nearly every file upstream touched -- ~77 conflicts, none real.
+#
+# UPSTREAM_PATH is whatever upstream calls itself today; it was
+# `github.com/google/cel-go` until v0.32.0 moved it to `cel.dev/cel-go`. A sync
+# spanning such a move has to un-rename to the old path (to match the merge
+# base) and re-rename from the new one, which means two runs with the constant
+# changed in between.
 #
 # So the rename is applied last, and never merged:
 #
@@ -37,7 +43,7 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 
-UPSTREAM_PATH="github.com/google/cel-go"
+UPSTREAM_PATH="cel.dev/cel-go"
 FORK_PATH="github.com/authzed/cel-go"
 
 UPSTREAM_REMOTE="${UPSTREAM_REMOTE:-upstream}"
@@ -72,8 +78,12 @@ rename() {
     to="$UPSTREAM_PATH"
   fi
 
-  # -I skips binary files, and git grep only looks at tracked ones.
-  files="$(git grep -I --name-only --fixed-strings -e "$from" -- . || true)"
+  # -I skips binary files, and git grep only looks at tracked ones. This
+  # script is excluded because it names both paths itself: renaming it would
+  # collapse UPSTREAM_PATH and FORK_PATH onto the same value and break the
+  # next sync.
+  files="$(git grep -I --name-only --fixed-strings -e "$from" \
+    -- . ':(exclude).github/workflows/sync-upstream.sh' || true)"
   if [[ -z "$files" ]]; then
     echo "rename: no occurrences of ${from}; nothing to do"
     return 0

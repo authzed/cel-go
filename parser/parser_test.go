@@ -24,6 +24,7 @@ import (
 	"github.com/authzed/cel-go/common"
 	"github.com/authzed/cel-go/common/ast"
 	"github.com/authzed/cel-go/common/debug"
+	"github.com/authzed/cel-go/common/operators"
 	"github.com/authzed/cel-go/common/types"
 	"github.com/authzed/cel-go/test"
 )
@@ -2391,6 +2392,248 @@ func BenchmarkParseParallel(b *testing.B) {
 			}
 		}
 	})
+}
+
+type benchTestInfo struct {
+	// I contains the input expression to be parsed.
+	I string
+
+	// E indicates whether an error is expected.
+	E bool
+}
+
+type benchCategory struct {
+	name  string
+	cases []benchTestInfo
+}
+
+var benchCategories = []benchCategory{
+	// Simple: common, representative CEL expressions covering basic syntax, operators, calls, and literals
+	{
+		name: "Simple",
+		cases: []benchTestInfo{
+			{
+				I: "x * 2 + y / 3",
+			},
+			{
+				I: `foo.bar.baz(1, 2, "abc")`,
+			},
+			{
+				I: `a > 5 && b < 10 || c == "xyz"`,
+			},
+			{
+				I: "x ? y : z",
+			},
+			{
+				I: `{"foo": 1, "bar": [2, 3]}`,
+			},
+			{
+				I: "a[b]",
+			},
+			{
+				I: "a.b.c",
+			},
+			{
+				I: "a.`b-c`",
+			},
+			{
+				I: "\"\\a\\b\\f\\n\\r\\t\\v'\\\"\\\\ Legal escapes \\u2764\"",
+			},
+		},
+	},
+
+	// Complex: expressions with deep chaining, nesting, precedence, and complex structures
+	{
+		name: "Complex",
+		cases: []benchTestInfo{
+			{
+				I: "a" + strings.Repeat(" + a", 49),
+			},
+			{
+				I: "a" + strings.Repeat(" || a", 49),
+			},
+			{
+				I: "a" + strings.Repeat(".f", 49),
+			},
+			{
+				I: strings.Repeat("(", 20) + "a" + strings.Repeat(")", 20),
+			},
+			{
+				I: `SomeMessage{foo: 5, bar: "xyz"}`,
+			},
+			{
+				I: "1 + 2 * 3 - 1 / 2 == 6 % 1",
+			},
+			{
+				I: "[] + [1, 2, 3] + [4]",
+			},
+		},
+	},
+
+	// Macros: standard and receiver comprehension macros, optional syntax traversal
+	{
+		name: "Macros",
+		cases: []benchTestInfo{
+			{
+				I: "has(m.f)",
+			},
+			{
+				I: "[1, 2, 3].all(x, x > 0)",
+			},
+			{
+				I: "m.map(v, v * 2)",
+			},
+			{
+				I: "m.filter(v, v > 0)",
+			},
+			{
+				I: "m.exists_one(v, v == 1)",
+			},
+			{
+				I: "x.filter(y, y.exists(z, has(z.a)))",
+			},
+			{
+				I: "a.?b[?0] && a[?c]",
+			},
+			{
+				I: "m.optMap(v, v + 1)",
+			},
+		},
+	},
+
+	// Errors: representative syntax errors, invalid tokens, keywords, and unclosed delimiters
+	{
+		name: "Errors",
+		cases: []benchTestInfo{
+			{
+				I: "x * 2 + y /",
+				E: true,
+			},
+			{
+				I: `foo.bar.baz(1, 2, "abc"`,
+				E: true,
+			},
+			{
+				I: "a > 5 && && b < 10",
+				E: true,
+			},
+			{
+				I: `{"foo": 1, "bar": [2, 3`,
+				E: true,
+			},
+			{
+				I: "1 + $",
+				E: true,
+			},
+			{
+				I: "break",
+				E: true,
+			},
+			{
+				I: `"\xFh"`,
+				E: true,
+			},
+			{
+				I: "a" + strings.Repeat(" + a", 49) + " +",
+				E: true,
+			},
+			{
+				I: strings.Repeat("(", 20) + "a",
+				E: true,
+			},
+			{
+				I: "f(*" + strings.Repeat(", *", 9) + ")",
+				E: true,
+			},
+		},
+	},
+}
+
+// BenchmarkByCategory benchmarks parsing organized by workload categories.
+func BenchmarkByCategory(b *testing.B) {
+	p := newBenchmarkCategoryParser(b)
+	for _, cat := range benchCategories {
+		b.Run(cat.name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				for _, tc := range cat.cases {
+					src := common.NewTextSource(tc.I)
+					_, errs := p.Parse(src)
+					hasErr := len(errs.GetErrors()) > 0
+					if hasErr != tc.E {
+						b.Fatalf("p.Parse(%q) got error: %v, expected error: %v", tc.I, hasErr, tc.E)
+					}
+				}
+			}
+		})
+	}
+}
+
+// BenchmarkParallelByCategory benchmarks parsing concurrently across goroutines by category.
+func BenchmarkParallelByCategory(b *testing.B) {
+	p := newBenchmarkCategoryParser(b)
+	for _, cat := range benchCategories {
+		b.Run(cat.name, func(b *testing.B) {
+			b.ResetTimer()
+			b.RunParallel(func(pb *testing.PB) {
+				for pb.Next() {
+					for _, tc := range cat.cases {
+						src := common.NewTextSource(tc.I)
+						_, errs := p.Parse(src)
+						hasErr := len(errs.GetErrors()) > 0
+						if hasErr != tc.E {
+							b.Fatalf("p.Parse(%q) got error: %v, expected error: %v", tc.I, hasErr, tc.E)
+						}
+					}
+				}
+			})
+		})
+	}
+}
+
+// optMapMacro expands `m.optMap(v, f)` into a conditional comprehension.
+var optMapMacro = NewReceiverMacro("optMap", 2, optMapExpander)
+
+func optMapExpander(meh ExprHelper, target ast.Expr, args []ast.Expr) (ast.Expr, *common.Error) {
+	varIdent := args[0]
+	varName := ""
+	switch varIdent.Kind() {
+	case ast.IdentKind:
+		varName = varIdent.AsIdent()
+	default:
+		return nil, meh.NewError(varIdent.ID(), "optMap() variable name must be a simple identifier")
+	}
+	mapExpr := args[1]
+	return meh.NewCall(
+		operators.Conditional,
+		meh.NewMemberCall("hasValue", target),
+		meh.NewCall("optional.of",
+			meh.NewComprehension(
+				meh.NewList(),
+				"#unused",
+				varName,
+				meh.NewMemberCall("value", meh.Copy(target)),
+				meh.NewLiteral(types.False),
+				meh.NewIdent(varName),
+				mapExpr,
+			),
+		),
+		meh.NewCall("optional.none"),
+	), nil
+}
+
+func newBenchmarkCategoryParser(tb testing.TB) *Parser {
+	tb.Helper()
+	p, err := NewParser(
+		Macros(append(AllMacros, optMapMacro)...),
+		EnableOptionalSyntax(true),
+		EnableIdentEscapeSyntax(true),
+		MaxRecursionDepth(512),
+	)
+	if err != nil {
+		tb.Fatalf("NewParser() failed: %v", err)
+	}
+	return p
 }
 
 func TestParseErrorData(t *testing.T) {

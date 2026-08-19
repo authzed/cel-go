@@ -23,10 +23,10 @@ import (
 	"github.com/authzed/cel-go/common/env"
 	"github.com/authzed/cel-go/common/types"
 	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 	"github.com/authzed/cel-go/test"
 
 	"go.yaml.in/yaml/v3"
-
 )
 
 var (
@@ -129,6 +129,28 @@ var (
 	  ? optional.of(((y == 1) ? optional.of("a") : optional.none()).orValue("b"))
 	  : optional.none()`,
 		},
+		{
+			name: "agent_tool_execution_governance",
+			expr: `(request.is_emergency ? ["REQUIRE_VP_APPROVAL"] : ((tool.is_mutation && request.env == "prod") ? ["REQUIRE_TECH_LEAD_2FA"] : (tool.is_mutation ? ["REQUIRE_PEER_CONFIRMATION"] : []))) + ((hasCreditCard(tool.call.args) ? ["REDACT_PCI"] : (hasEmailOrPhone(tool.call.args) ? ["REDACT_PII"] : [])) + ((tool.call.args.batch_size > 10000) ? ["THROTTLE_TIER_3"] : ((tool.call.args.batch_size > 1000) ? ["THROTTLE_TIER_2"] : ((tool.call.args.batch_size > 100) ? ["THROTTLE_TIER_1"] : []))))`,
+			envOpts: []cel.EnvOption{
+				cel.Function("hasCreditCard",
+					cel.Overload("hasCreditCard", []*cel.Type{cel.DynType}, cel.BoolType,
+						cel.UnaryBinding(func(args ref.Val) ref.Val {
+							if m, ok := args.(traits.Mapper); ok {
+								return types.Bool(m.Contains(types.String("cc")) == types.True)
+							}
+							return types.False
+						}))),
+				cel.Function("hasEmailOrPhone",
+					cel.Overload("hasEmailOrPhone", []*cel.Type{cel.DynType}, cel.BoolType,
+						cel.UnaryBinding(func(args ref.Val) ref.Val {
+							if m, ok := args.(traits.Mapper); ok {
+								return types.Bool(m.Contains(types.String("email")) == types.True || m.Contains(types.String("phone")) == types.True)
+							}
+							return types.False
+						}))),
+			},
+		},
 	}
 
 	composerUnnestTests = []struct {
@@ -136,6 +158,7 @@ var (
 		expr         string
 		composed     string
 		composerOpts []ComposerOption
+		envOpts      []cel.EnvOption
 		outputType   *cel.Type
 	}{
 		{
@@ -209,6 +232,30 @@ var (
 		(now.getHours() >= 20) ? @index5 : optional.of(@index3.format([@index0, @index2])))`,
 			outputType: cel.OptionalType(cel.StringType),
 		},
+		{
+			name:         "agent_tool_execution_governance",
+			composerOpts: []ComposerOption{ExpressionUnnestHeight(2)},
+			envOpts: []cel.EnvOption{
+				cel.Function("hasCreditCard",
+					cel.Overload("hasCreditCard", []*cel.Type{cel.DynType}, cel.BoolType,
+						cel.UnaryBinding(func(args ref.Val) ref.Val {
+							if m, ok := args.(traits.Mapper); ok {
+								return types.Bool(m.Contains(types.String("cc")) == types.True)
+							}
+							return types.False
+						}))),
+				cel.Function("hasEmailOrPhone",
+					cel.Overload("hasEmailOrPhone", []*cel.Type{cel.DynType}, cel.BoolType,
+						cel.UnaryBinding(func(args ref.Val) ref.Val {
+							if m, ok := args.(traits.Mapper); ok {
+								return types.Bool(m.Contains(types.String("email")) == types.True || m.Contains(types.String("phone")) == types.True)
+							}
+							return types.False
+						}))),
+			},
+			composed: `cel.@block([tool.is_mutation && request.env == "prod", tool.is_mutation ? ["REQUIRE_PEER_CONFIRMATION"] : [], hasEmailOrPhone(tool.call.args) ? ["REDACT_PII"] : [], tool.call.args.batch_size > 10000, tool.call.args.batch_size > 1000, tool.call.args.batch_size > 100, request.is_emergency ? ["REQUIRE_VP_APPROVAL"] : (@index0 ? ["REQUIRE_TECH_LEAD_2FA"] : @index1)], @index6 + ((hasCreditCard(tool.call.args) ? ["REDACT_PCI"] : @index2) + (@index3 ? ["THROTTLE_TIER_3"] : (@index4 ? ["THROTTLE_TIER_2"] : (@index5 ? ["THROTTLE_TIER_1"] : [])))))`,
+			outputType: cel.ListType(cel.StringType),
+		},
 	}
 
 	policyErrorTests = []struct {
@@ -270,6 +317,9 @@ ERROR: testdata/errors/policy.yaml:45:16: incompatible output types: block has o
  | ........^
 ERROR: testdata/errors_unreachable/policy.yaml:36:13: match creates unreachable outputs
  |           - output: |
+ | ............^
+ERROR: testdata/errors_unreachable/policy.yaml:38:13: Condition is always false
+ |           - condition: "false"
  | ............^`,
 		},
 		{
@@ -277,6 +327,30 @@ ERROR: testdata/errors_unreachable/policy.yaml:36:13: match creates unreachable 
 			err: `ERROR: testdata/nested_incompatible_outputs/policy.yaml:22:9: incompatible output types: block has output type string, but previous outputs have type bool
  |         match:
  | ........^`,
+		},
+		{
+			name: "aggregate_errors",
+			err: `ERROR: testdata/aggregate_errors/policy.yaml:21:13: match creates unreachable outputs
+ |           - condition: "true"
+ | ............^
+ERROR: testdata/aggregate_errors/policy.yaml:24:22: incompatible output types: block has output type int, but previous outputs have type optional_type(string)
+ |             output: "403"
+ | .....................^`,
+		},
+		{
+			name: "aggregate_list_errors",
+			err: `ERROR: testdata/aggregate_list_errors/policy.yaml:21:13: match creates unreachable outputs
+ |           - condition: "true"
+ | ............^
+ERROR: testdata/aggregate_list_errors/policy.yaml:24:22: incompatible output types: block has output type int, but previous outputs have type list(string)
+ |             output: "403"
+ | .....................^`,
+		},
+		{
+			name: "aggregate_nested_mixed_semantics",
+			err: `ERROR: testdata/aggregate_nested_mixed_semantics/policy.yaml:23:15: nested aggregate rules are not allowed
+ |               aggregate:
+ | ..............^`,
 		},
 	}
 )
