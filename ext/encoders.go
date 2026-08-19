@@ -22,6 +22,7 @@ import (
 
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/checker"
+	"cel.dev/cel-go/common/cost"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
 	"cel.dev/cel-go/interpreter"
@@ -184,8 +185,8 @@ func estimateDecode(estimator checker.CostEstimator, target *checker.AstNode, ar
 
 func trackEncode(args []ref.Val, _ ref.Val) *uint64 {
 	sz := actualSize(args[0])
-	cost := uint64(math.Ceil(float64(sz)*stringCostFactor)) + callCost
-	return &cost
+	total := cost.SafeAdd(cost.SafeMultiplyByFactor(sz, stringCostFactor), callCost)
+	return &total
 }
 
 func trackJSONEncode(args []ref.Val, _ ref.Val) *uint64 {
@@ -195,8 +196,8 @@ func trackJSONEncode(args []ref.Val, _ ref.Val) *uint64 {
 
 func trackDecode(args []ref.Val, _ ref.Val) *uint64 {
 	sz := actualSize(args[0])
-	cost := uint64(math.Ceil(float64(sz)*stringCostFactor)) + callCost
-	return &cost
+	total := cost.SafeAdd(cost.SafeMultiplyByFactor(sz, stringCostFactor), callCost)
+	return &total
 }
 
 func estimateEncodeSize(sz checker.SizeEstimate) checker.SizeEstimate {

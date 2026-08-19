@@ -18,6 +18,7 @@ import (
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/checker"
 	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/cost"
 	"cel.dev/cel-go/common/operators"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
@@ -248,7 +249,7 @@ func trackSetsCost(costFactor float64) interpreter.FunctionTracker {
 	return func(args []ref.Val, _ ref.Val) *uint64 {
 		lhsSize := actualSize(args[0])
 		rhsSize := actualSize(args[1])
-		cost := safeAdd(callCost, uint64(float64(lhsSize*rhsSize)*costFactor))
-		return &cost
+		total := cost.SafeAdd(callCost, uint64(float64(lhsSize*rhsSize)*costFactor))
+		return &total
 	}
 }

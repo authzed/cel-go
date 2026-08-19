@@ -25,6 +25,7 @@ import (
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/checker"
 	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/cost"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
 	"cel.dev/cel-go/interpreter"
@@ -411,8 +412,8 @@ func estimateReplaceCost() checker.FunctionEstimator {
 
 func extractCostTracker() interpreter.FunctionTracker {
 	return func(args []ref.Val, result ref.Val) *uint64 {
-		targetCost := float64(safeAdd(actualSize(args[0]), 1)) * common.StringTraversalCostFactor
-		regexCost := float64(safeAdd(actualSize(args[1]), 1)) * common.RegexStringLengthCostFactor
+		targetCost := float64(cost.SafeAdd(actualSize(args[0]), 1)) * common.StringTraversalCostFactor
+		regexCost := float64(cost.SafeAdd(actualSize(args[1]), 1)) * common.RegexStringLengthCostFactor
 		// Actual search cost calculation = targetCost + regexCost
 		searchCost := targetCost * regexCost
 		// The total cost is the base call cost + search cost + result string allocation.

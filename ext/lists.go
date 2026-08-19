@@ -23,6 +23,7 @@ import (
 	"cel.dev/cel-go/checker"
 	"cel.dev/cel-go/common"
 	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/cost"
 	"cel.dev/cel-go/common/decls"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
@@ -893,7 +894,7 @@ func trackListSelfCompare(l traits.Lister) *uint64 {
 	if elem.Type() == types.StringType || elem.Type() == types.BytesType {
 		costFactor += common.StringTraversalCostFactor
 	}
-	return trackAllocatingListCall(costFactor, safeMul(sz, sz))
+	return trackAllocatingListCall(costFactor, cost.SafeMultiply(sz, sz))
 }
 
 // trackAllocatingListCall computes costs as a function of the size of the result list with a baseline cost
@@ -902,8 +903,8 @@ func trackAllocatingListCall(costFactor float64, size uint64) *uint64 {
 	if costFactor < 0.0 {
 		costFactor = 1.0
 	}
-	cost := safeAdd(uint64(float64(size)*costFactor), callCost, common.ListCreateBaseCost)
-	return &cost
+	total := cost.SafeAdd(uint64(float64(size)*costFactor), callCost, common.ListCreateBaseCost)
+	return &total
 }
 
 func estimateListDistinctLegacy(estimator checker.CostEstimator, target *checker.AstNode, args []checker.AstNode) *checker.CallEstimate {

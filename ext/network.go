@@ -23,6 +23,7 @@ import (
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/checker"
 	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/cost"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
 	"cel.dev/cel-go/interpreter"
@@ -766,13 +767,13 @@ func estimateNetworkContainsCIDRStringCost(estimator checker.CostEstimator, targ
 // Runtime cost tracking functions for network extensions.
 
 func trackNetworkParseCost(args []ref.Val, result ref.Val) *uint64 {
-	cost := uint64(math.Ceil(float64(actualSize(args[0])) * stringCostFactor))
-	return &cost
+	total := cost.SafeMultiplyByFactor(actualSize(args[0]), stringCostFactor)
+	return &total
 }
 
 func trackIPIsCanonicalCost(args []ref.Val, result ref.Val) *uint64 {
-	cost := uint64(math.Ceil(float64(actualSize(args[0])) * 2 * stringCostFactor))
-	return &cost
+	total := cost.SafeMultiplyByFactor(actualSize(args[0]), 2*stringCostFactor)
+	return &total
 }
 
 func trackNetworkNominalCost(args []ref.Val, result ref.Val) *uint64 {
@@ -781,30 +782,30 @@ func trackNetworkNominalCost(args []ref.Val, result ref.Val) *uint64 {
 
 func trackNetworkContainsIPIPCost(args []ref.Val, result ref.Val) *uint64 {
 	cidrSize := actualSize(args[0])
-	cost := uint64(math.Ceil(float64(cidrSize+cidrSize) * stringCostFactor))
-	return &cost
+	total := cost.SafeMultiplyByFactor(cost.SafeAdd(cidrSize, cidrSize), stringCostFactor)
+	return &total
 }
 
 func trackNetworkContainsIPStringCost(args []ref.Val, result ref.Val) *uint64 {
 	cidrSize := actualSize(args[0])
 	otherSize := actualSize(args[1])
-	cost := uint64(math.Ceil(float64(cidrSize+cidrSize) * stringCostFactor))
-	cost = safeAdd(cost, uint64(math.Ceil(float64(otherSize)*stringCostFactor)))
-	return &cost
+	total := cost.SafeMultiplyByFactor(cost.SafeAdd(cidrSize, cidrSize), stringCostFactor)
+	total = cost.SafeAdd(total, cost.SafeMultiplyByFactor(otherSize, stringCostFactor))
+	return &total
 }
 
 func trackNetworkContainsCIDRCIDRCost(args []ref.Val, result ref.Val) *uint64 {
 	cidrSize := actualSize(args[0])
-	cost := uint64(math.Ceil(float64(cidrSize+cidrSize) * stringCostFactor))
-	cost = safeAdd(cost, uint64(math.Ceil(float64(cidrSize)*stringCostFactor)), 1)
-	return &cost
+	total := cost.SafeMultiplyByFactor(cost.SafeAdd(cidrSize, cidrSize), stringCostFactor)
+	total = cost.SafeAdd(total, cost.SafeMultiplyByFactor(cidrSize, stringCostFactor), 1)
+	return &total
 }
 
 func trackNetworkContainsCIDRStringCost(args []ref.Val, result ref.Val) *uint64 {
 	cidrSize := actualSize(args[0])
 	otherSize := actualSize(args[1])
-	cost := uint64(math.Ceil(float64(cidrSize+cidrSize) * stringCostFactor))
-	cost = safeAdd(cost, uint64(math.Ceil(float64(cidrSize)*stringCostFactor)), 1)
-	cost = safeAdd(cost, uint64(math.Ceil(float64(otherSize)*stringCostFactor)))
-	return &cost
+	total := cost.SafeMultiplyByFactor(cost.SafeAdd(cidrSize, cidrSize), stringCostFactor)
+	total = cost.SafeAdd(total, cost.SafeMultiplyByFactor(cidrSize, stringCostFactor), 1)
+	total = cost.SafeAdd(total, cost.SafeMultiplyByFactor(otherSize, stringCostFactor))
+	return &total
 }

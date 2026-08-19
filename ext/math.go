@@ -22,6 +22,7 @@ import (
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/checker"
 	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/cost"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
 	"cel.dev/cel-go/common/types/traits"
@@ -982,6 +983,6 @@ func estimateMathListCost(estimator checker.CostEstimator, target *checker.AstNo
 
 func trackMathListCost(args []ref.Val, _ ref.Val) *uint64 {
 	sz := actualSize(args[0])
-	cost := safeAdd(sz, callCost)
-	return &cost
+	total := cost.SafeAdd(sz, callCost)
+	return &total
 }

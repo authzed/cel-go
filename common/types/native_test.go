@@ -1303,6 +1303,95 @@ func TestNativeToValueDelegatesUnregisteredStructs(t *testing.T) {
 	}
 }
 
+func TestNativeObjectCalculateSize(t *testing.T) {
+	env, err := cel.NewEnv(
+		ext.NativeTypes(
+			reflect.TypeOf(TestAllTypes{}),
+			reflect.TypeOf(TestNestedType{}),
+			reflect.TypeOf(TestEmbeddedPointerTypes{}),
+		),
+	)
+	if err != nil {
+		t.Fatalf("cel.NewEnv() failed: %v", err)
+	}
+	adapter := env.CELTypeAdapter()
+
+	tests := []struct {
+		name string
+		val  any
+		want uint32
+	}{
+		{
+			name: "empty_struct",
+			val:  &TestNestedType{},
+			want: 1, // 1 (container)
+		},
+		{
+			name: "nil_embedded_pointer",
+			val:  &TestEmbeddedPointerTypes{},
+			want: 1, // 1 (container); promoted fields through the nil embedded pointer count as unset
+		},
+		{
+			name: "struct_with_scalar_and_list",
+			val: &TestNestedType{
+				NestedListVal: []string{"a", "b", "c"},
+			},
+			want: 5, // 1 (root struct) + ["a", "b", "c"] (1 list container + 3 elements = 4) = 5
+		},
+		{
+			name: "struct_with_nested_map",
+			val: &TestNestedType{
+				NestedMapVal: map[int64]bool{1: true, 2: false},
+			},
+			want: 6, // 1 (root struct) + map (1 container + (1+1) + (1+1) = 5) = 6
+		},
+		{
+			name: "nested_struct",
+			val: &TestAllTypes{
+				StringVal: "hello",
+				NestedVal: &TestNestedType{
+					NestedListVal: []string{"a", "b"},
+				},
+			},
+			// 1 (root struct) + "hello"(1 unit) + NestedVal(1 container + ["a", "b"](1+2=3) = 4) = 6
+			want: 6,
+		},
+		{
+			name: "bytes_and_time",
+			val: &TestAllTypes{
+				BytesVal:     []byte("test"),
+				DurationVal:  time.Second,
+				TimestampVal: time.Unix(100, 0),
+			},
+			// 1 (root struct) + "test"(1 unit) + duration(1) + timestamp(1) = 4
+			want: 4,
+		},
+		{
+			name: "slice_of_structs",
+			val: &TestAllTypes{
+				ListVal: []*TestNestedType{
+					{NestedListVal: []string{"x"}},
+					{NestedListVal: []string{"y", "z"}},
+				},
+			},
+			want: 9,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			val := adapter.NativeToValue(tc.val)
+			sizer, ok := val.(types.AggregateSizeVisitor)
+			if !ok {
+				t.Fatalf("expected types.AggregateSizeVisitor implementation for %T", val)
+			}
+			if got := sizer.AggregateSize(types.NewSizeCalculator()); got != tc.want {
+				t.Errorf("got aggregate size %d, want %d", got, tc.want)
+			}
+		})
+	}
+}
+
 func BenchmarkNativeTypesEval(b *testing.B) {
 	benchmarks := []struct {
 		name    string
