@@ -17,6 +17,7 @@ package policy_conformance_test
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -174,7 +175,7 @@ func k8sParserOpts() policy.ParserOption {
 func TestConformance(t *testing.T) {
 	absTestdataDir, err := rlocation(testdataDir)
 	if err != nil {
-		t.Skipf("rlocation(%q) failed: %v", testdataDir, err)
+		log.Fatalf("rlocation(%q) failed: %v", testdataDir, err)
 	}
 
 	testDirs := ([]string)(tests)
