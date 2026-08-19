@@ -15,7 +15,7 @@
 package traits
 
 import (
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // Iterable aggregate types permit traversal over their elements.

@@ -14,7 +14,7 @@
 
 package traits
 
-import "cel.dev/cel-go/common/types/ref"
+import "github.com/authzed/cel-go/common/types/ref"
 
 // Adder interface to support '+' operator overloads.
 type Adder interface {

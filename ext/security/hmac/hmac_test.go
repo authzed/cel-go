@@ -26,9 +26,9 @@ import (
 	"reflect"
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/ext"
-	hmaclib "cel.dev/cel-go/ext/security/hmac"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/ext"
+	hmaclib "github.com/authzed/cel-go/ext/security/hmac"
 )
 
 func evalExpr(t *testing.T, env *cel.Env, expr string, vars map[string]any) any {

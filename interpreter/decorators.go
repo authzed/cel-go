@@ -17,10 +17,10 @@ package interpreter
 import (
 	"fmt"
 
-	"cel.dev/cel-go/common/overloads"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 )
 
 // InterpretableDecorator is a functional interface for decorating or replacing

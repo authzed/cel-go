@@ -26,11 +26,11 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"cel.dev/cel-go/common/types/pb"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/types/pb"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	tpb "google.golang.org/protobuf/types/known/timestamppb"

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 // Example_cel_Collections showcases membership, indexing, search (exists), all, and filter

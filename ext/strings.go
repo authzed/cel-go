@@ -27,14 +27,14 @@ import (
 
 	"golang.org/x/text/language"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/checker"
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/cost"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
-	"cel.dev/cel-go/interpreter"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/cost"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/interpreter"
 )
 
 const (

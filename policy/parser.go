@@ -20,9 +20,9 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/ast"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
 )
 
 // SemanticType describes the evaluation semantic for a given policy block.

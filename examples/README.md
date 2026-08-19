@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 func main() {

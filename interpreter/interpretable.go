@@ -18,12 +18,12 @@ import (
 	"fmt"
 	"sync"
 
-	"cel.dev/cel-go/common/functions"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/overloads"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/functions"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 )
 
 // Interpretable evaluates an Activation and produces a value.

@@ -22,12 +22,12 @@ import (
 	"strings"
 	"sync"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
-	"cel.dev/cel-go/interpreter"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/interpreter"
 )
 
 // Bindings returns a cel.EnvOption to configure support for local variable

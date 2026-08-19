@@ -24,9 +24,9 @@ import (
 	"strings"
 	"time"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 const (

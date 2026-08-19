@@ -26,16 +26,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/pb"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
-	"cel.dev/cel-go/test"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/pb"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/test"
 
 	structpb "google.golang.org/protobuf/types/known/structpb"
 
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 )
 
 func TestNativeTypes(t *testing.T) {

@@ -1,10 +1,10 @@
-module cel.dev/cel-go/policy
+module github.com/authzed/cel-go/policy
 
 go 1.23.0
 
 require (
-	cel.dev/cel-go v0.26.1
-	cel.dev/cel-go/tools v0.0.0-20251023215754-a36d461be521
+	github.com/authzed/cel-go v0.26.1
+	github.com/authzed/cel-go/tools v0.0.0-20251023215754-a36d461be521
 	github.com/google/go-cmp v0.7.0
 	go.yaml.in/yaml/v3 v3.0.4
 	google.golang.org/protobuf v1.36.10
@@ -19,6 +19,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250311190419-81fb87f6b8bf // indirect
 )
 
-replace cel.dev/cel-go => ../.
+replace github.com/authzed/cel-go => ../.
 
-replace cel.dev/cel-go/tools => ../tools/.
+replace github.com/authzed/cel-go/tools => ../tools/.

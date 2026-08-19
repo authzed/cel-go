@@ -17,7 +17,7 @@ package repl
 import (
 	"testing"
 
-	"cel.dev/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 

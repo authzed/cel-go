@@ -24,7 +24,7 @@ go_library(
     srcs = [
         "compiler.go",
     ],
-    importpath = "cel.dev/cel-go/tools/compiler",
+    importpath = "github.com/authzed/cel-go/tools/compiler",
     deps = [
         "//cel:go_default_library",
         "//common:go_default_library",

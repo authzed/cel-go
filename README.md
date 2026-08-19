@@ -1,7 +1,7 @@
 # Common Expression Language
 
-[![Go Report Card](https://goreportcard.com/badge/cel.dev/cel-go)](https://goreportcard.com/report/cel.dev/cel-go)
-[![GoDoc](https://pkg.go.dev/badge/cel.dev/cel-go.svg)][6]
+[![Go Report Card](https://goreportcard.com/badge/github.com/authzed/cel-go)](https://goreportcard.com/report/github.com/authzed/cel-go)
+[![GoDoc](https://pkg.go.dev/badge/github.com/authzed/cel-go.svg)][6]
 
 > [!WARNING]
 > **On June 16, 2026, this repository will move to
@@ -64,7 +64,7 @@ Let's expose `name` and  `group` variables to CEL using the `cel.Variable`
 environment option:
 
 ```go
-import "cel.dev/cel-go/cel"
+import "github.com/authzed/cel-go/cel"
 
 env, err := cel.NewEnv(
     cel.Variable("name", cel.StringType),
@@ -290,4 +290,4 @@ Released under the [Apache License](LICENSE).
 [3]:  https://github.com/cel-expr/cel-cpp
 [4]:  https://github.com/cel-expr/cel-go/issues
 [5]:  https://bazel.build
-[6]:  https://pkg.go.dev/cel.dev/cel-go
+[6]:  https://pkg.go.dev/github.com/authzed/cel-go

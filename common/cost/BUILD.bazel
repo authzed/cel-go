@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "cost.go",
     ],
-    importpath = "cel.dev/cel-go/common/cost",
+    importpath = "github.com/authzed/cel-go/common/cost",
 )
 
 go_test(

@@ -25,13 +25,13 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/interpreter"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/interpreter"
 
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 

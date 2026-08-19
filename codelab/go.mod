@@ -1,9 +1,9 @@
-module cel.dev/cel-go/codelab
+module github.com/authzed/cel-go/codelab
 
 go 1.23.0
 
 require (
-	cel.dev/cel-go v0.21.0
+	github.com/authzed/cel-go v0.21.0
 	github.com/golang/glog v1.2.4
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7
 	google.golang.org/protobuf v1.36.10
@@ -17,4 +17,4 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7 // indirect
 )
 
-replace cel.dev/cel-go => ../.
+replace github.com/authzed/cel-go => ../.

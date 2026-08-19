@@ -1,11 +1,11 @@
-module cel.dev/cel-go/conformance
+module github.com/authzed/cel-go/conformance
 
 go 1.23.0
 
 require (
-	cel.dev/cel-go v0.26.1
-	cel.dev/cel-go/policy v0.0.0-20250311174852-f5ea07b389a1
-	cel.dev/cel-go/tools v0.0.0-20251023215754-a36d461be521
+	github.com/authzed/cel-go v0.26.1
+	github.com/authzed/cel-go/policy v0.0.0-20250311174852-f5ea07b389a1
+	github.com/authzed/cel-go/tools v0.0.0-20251023215754-a36d461be521
 	cel.dev/expr v0.25.1
 	github.com/bazelbuild/rules_go v0.49.0
 	github.com/google/go-cmp v0.7.0
@@ -21,8 +21,8 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250311190419-81fb87f6b8bf // indirect
 )
 
-replace cel.dev/cel-go => ./..
+replace github.com/authzed/cel-go => ./..
 
-replace cel.dev/cel-go/policy => ../policy
+replace github.com/authzed/cel-go/policy => ../policy
 
-replace cel.dev/cel-go/tools => ../tools
+replace github.com/authzed/cel-go/tools => ../tools

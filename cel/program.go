@@ -20,13 +20,13 @@ import (
 	"fmt"
 	"time"
 
-	"cel.dev/cel-go/cel/async"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/overloads"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/interpreter"
+	"github.com/authzed/cel-go/cel/async"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/interpreter"
 )
 
 // Program is an evaluable view of an Ast.

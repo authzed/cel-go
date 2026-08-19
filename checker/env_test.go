@@ -18,12 +18,12 @@ import (
 	"strings"
 	"testing"
 
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/containers"
-	"cel.dev/cel-go/common/decls"
-	"cel.dev/cel-go/common/stdlib"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/parser"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/stdlib"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/parser"
 )
 
 func TestOverlappingMacro(t *testing.T) {

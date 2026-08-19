@@ -20,12 +20,12 @@ import (
 	"strings"
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/checker"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 )
 
 func TestSets(t *testing.T) {

@@ -26,7 +26,7 @@ go_library(
         "test_coverage_reporter.go",
         "test_runner.go",
     ],
-    importpath = "cel.dev/cel-go/tools/celtest",
+    importpath = "github.com/authzed/cel-go/tools/celtest",
     deps = [
         "//cel:go_default_library",
         "//common/ast:go_default_library",

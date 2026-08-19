@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"math"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/checker"
-	"cel.dev/cel-go/common/cost"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/interpreter"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common/cost"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/interpreter"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )

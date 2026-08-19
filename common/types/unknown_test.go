@@ -21,7 +21,7 @@ import (
 	"strings"
 	"testing"
 
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 func TestIsUnknown(t *testing.T) {

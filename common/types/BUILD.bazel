@@ -38,7 +38,7 @@ go_library(
         "unknown.go",
         "util.go",
     ],
-    importpath = "cel.dev/cel-go/common/types",
+    importpath = "github.com/authzed/cel-go/common/types",
     deps = [
         "//checker/decls:go_default_library",
         "//common/overloads:go_default_library",

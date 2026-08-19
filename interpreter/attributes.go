@@ -18,10 +18,10 @@ import (
 	"fmt"
 	"strings"
 
-	"cel.dev/cel-go/common/containers"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
 )
 
 // AttributeFactory provides methods creating Attribute and Qualifier values.

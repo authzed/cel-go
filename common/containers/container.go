@@ -21,7 +21,7 @@ import (
 	"strings"
 	"unicode"
 
-	"cel.dev/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/ast"
 )
 
 var (

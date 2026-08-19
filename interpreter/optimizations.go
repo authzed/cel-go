@@ -17,8 +17,8 @@ package interpreter
 import (
 	"regexp"
 
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // MatchesRegexOptimization optimizes the 'matches' standard library function by compiling the regex pattern and

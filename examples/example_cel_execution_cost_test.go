@@ -19,9 +19,9 @@ import (
 	"log"
 	"strings"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/checker"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 type exampleCostEstimator struct {

@@ -18,12 +18,12 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/parser"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/parser"
 )
 
 // Example_cel_CustomMacros showcases defining custom AST transformation macros

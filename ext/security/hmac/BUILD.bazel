@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "hmac.go",
     ],
-    importpath = "cel.dev/cel-go/ext/security/hmac",
+    importpath = "github.com/authzed/cel-go/ext/security/hmac",
     deps = [
         "//cel:go_default_library",
         "//common/types:go_default_library",

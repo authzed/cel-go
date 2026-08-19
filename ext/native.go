@@ -15,8 +15,8 @@
 package ext
 
 import (
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/types"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
 )
 
 // NativeTypesOption is a functional interface for configuring handling of native types.

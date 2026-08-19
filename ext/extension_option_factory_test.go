@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/env"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/env"
 )
 
 func TestExtensionOptionFactoryInvalidExtension(t *testing.T) {

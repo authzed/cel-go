@@ -20,13 +20,13 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
-	"cel.dev/cel-go/test"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/test"
 
-	proto2pb "cel.dev/cel-go/test/proto2pb"
+	proto2pb "github.com/authzed/cel-go/test/proto2pb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 

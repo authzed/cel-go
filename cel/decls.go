@@ -17,11 +17,11 @@ package cel
 import (
 	"fmt"
 
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/decls"
-	"cel.dev/cel-go/common/functions"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/functions"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 
 	celpb "cel.dev/expr"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"

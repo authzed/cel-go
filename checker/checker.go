@@ -22,13 +22,13 @@ import (
 	"slices"
 	"strings"
 
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/containers"
-	"cel.dev/cel-go/common/decls"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 type checker struct {

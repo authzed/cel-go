@@ -23,17 +23,17 @@ import (
 	"sync"
 	"testing"
 
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/decls"
-	"cel.dev/cel-go/common/env"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/env"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 
 	"google.golang.org/protobuf/proto"
 
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 

@@ -21,8 +21,8 @@ import (
 
 	antlr "github.com/antlr4-go/antlr/v4"
 
-	"cel.dev/cel-go/common/env"
-	"cel.dev/cel-go/repl/parser"
+	"github.com/authzed/cel-go/common/env"
+	"github.com/authzed/cel-go/repl/parser"
 )
 
 var (

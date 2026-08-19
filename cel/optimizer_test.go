@@ -19,14 +19,14 @@ import (
 	"strings"
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/ext"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/ext"
 
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

@@ -21,12 +21,12 @@ import (
 	"strings"
 	"testing"
 
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/debug"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/test"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/debug"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/test"
 )
 
 var testCases = []testInfo{

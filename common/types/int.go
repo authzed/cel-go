@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"

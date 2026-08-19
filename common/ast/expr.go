@@ -15,7 +15,7 @@
 package ast
 
 import (
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // ExprKind represents the expression node kind.

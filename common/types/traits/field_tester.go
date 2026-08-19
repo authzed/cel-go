@@ -15,7 +15,7 @@
 package traits
 
 import (
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // FieldTester indicates if a defined field on an object type is set to a

@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "jwt.go",
     ],
-    importpath = "cel.dev/cel-go/ext/security/jwt",
+    importpath = "github.com/authzed/cel-go/ext/security/jwt",
     deps = [
         "//cel:go_default_library",
         "//common/types:go_default_library",

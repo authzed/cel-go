@@ -15,7 +15,7 @@
 package test
 
 import (
-	"cel.dev/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/operators"
 
 	"google.golang.org/protobuf/proto"
 

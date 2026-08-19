@@ -18,7 +18,7 @@ import (
 	"errors"
 	"fmt"
 
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // Activation used to resolve identifiers by name and references by id.

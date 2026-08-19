@@ -1,9 +1,9 @@
-module cel.dev/cel-go/repl
+module github.com/authzed/cel-go/repl
 
 go 1.23.0
 
 require (
-	cel.dev/cel-go v0.26.1
+	github.com/authzed/cel-go v0.26.1
 	cel.dev/expr v0.25.1
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/chzyer/readline v1.5.1
@@ -20,4 +20,4 @@ require (
 	golang.org/x/text v0.22.0 // indirect
 )
 
-replace cel.dev/cel-go => ../.
+replace github.com/authzed/cel-go => ../.

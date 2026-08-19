@@ -20,10 +20,10 @@ import (
 	"strings"
 	"text/template"
 
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/overloads"
-	"cel.dev/cel-go/common/types"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
 )
 
 //go:embed templates/authoring.tmpl

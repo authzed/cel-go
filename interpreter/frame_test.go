@@ -18,8 +18,8 @@ import (
 	"context"
 	"testing"
 
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 func TestFrameCheckInterrupt(t *testing.T) {

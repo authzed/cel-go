@@ -19,11 +19,11 @@ import (
 	"testing"
 	"time"
 
-	"cel.dev/cel-go/checker/decls"
+	"github.com/authzed/cel-go/checker/decls"
 	"google.golang.org/protobuf/proto"
 
-	proto2pb "cel.dev/cel-go/test/proto2pb"
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto2pb "github.com/authzed/cel-go/test/proto2pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	dynamicpb "google.golang.org/protobuf/types/dynamicpb"
 	anypb "google.golang.org/protobuf/types/known/anypb"

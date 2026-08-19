@@ -19,7 +19,7 @@ import (
 	"reflect"
 	"testing"
 
-	"cel.dev/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/common/types/traits"
 	"google.golang.org/protobuf/proto"
 
 	anypb "google.golang.org/protobuf/types/known/anypb"

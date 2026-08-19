@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 // Example_cel_TransformingData showcases building maps, transforming lists with map(),

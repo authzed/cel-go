@@ -18,13 +18,13 @@ package celtest
 import (
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/decls"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/policy"
-	"cel.dev/cel-go/test"
-	"cel.dev/cel-go/tools/compiler"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/policy"
+	"github.com/authzed/cel-go/test"
+	"github.com/authzed/cel-go/tools/compiler"
 
 	"go.yaml.in/yaml/v3"
 

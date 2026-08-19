@@ -14,7 +14,7 @@
 
 package traits
 
-import "cel.dev/cel-go/common/types/ref"
+import "github.com/authzed/cel-go/common/types/ref"
 
 // Matcher interface for supporting 'matches()' overloads.
 type Matcher interface {

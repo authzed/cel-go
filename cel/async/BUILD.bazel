@@ -9,7 +9,7 @@ go_library(
     srcs = [
         "async.go",
     ],
-    importpath = "cel.dev/cel-go/cel/async",
+    importpath = "github.com/authzed/cel-go/cel/async",
     visibility = ["//visibility:public"],
     deps = [
         "//common/decls:go_default_library",

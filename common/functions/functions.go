@@ -18,7 +18,7 @@ package functions
 import (
 	"context"
 
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // Overload defines a named overload of a function, indicating an operand trait

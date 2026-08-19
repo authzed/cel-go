@@ -23,7 +23,7 @@ import (
 	"strings"
 	"unicode"
 
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 var (

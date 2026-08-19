@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
+	"github.com/authzed/cel-go/cel"
 )
 
 // Example_cel_ContextEval showcases evaluation cancellation and timeout using ContextEval

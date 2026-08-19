@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/ext"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/ext"
 )
 
 // Example_cel_StringsAndNumbers showcases string functions, concatenation, and numeric comparisons

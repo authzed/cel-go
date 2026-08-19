@@ -19,12 +19,12 @@ import (
 	"os"
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/env"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/common/types/traits"
-	"cel.dev/cel-go/test"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/env"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/authzed/cel-go/test"
 
 	"go.yaml.in/yaml/v3"
 )

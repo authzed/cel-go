@@ -24,15 +24,15 @@ import (
 	"testing"
 	"time"
 
-	"cel.dev/cel-go/checker"
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/containers"
-	"cel.dev/cel-go/common/decls"
-	"cel.dev/cel-go/common/functions"
-	"cel.dev/cel-go/common/overloads"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/parser"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/containers"
+	"github.com/authzed/cel-go/common/decls"
+	"github.com/authzed/cel-go/common/functions"
+	"github.com/authzed/cel-go/common/overloads"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/parser"
 )
 
 // asyncReturning returns an AsyncOp that immediately produces the given value, while counting the

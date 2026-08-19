@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"log"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/common/types/ref"
 )
 
 // Example_cel_Overload showcases defining custom global functions with cel.Overload

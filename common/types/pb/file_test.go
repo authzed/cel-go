@@ -21,10 +21,10 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"cel.dev/cel-go/checker/decls"
+	"github.com/authzed/cel-go/checker/decls"
 
-	proto2pb "cel.dev/cel-go/test/proto2pb"
-	proto3pb "cel.dev/cel-go/test/proto3pb"
+	proto2pb "github.com/authzed/cel-go/test/proto2pb"
+	proto3pb "github.com/authzed/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	descpb "google.golang.org/protobuf/types/descriptorpb"
 )

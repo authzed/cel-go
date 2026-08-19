@@ -19,10 +19,10 @@ import (
 	"strings"
 	"testing"
 
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/checker"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/interpreter"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/checker"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/interpreter"
 )
 
 func TestTwoVarComprehensions(t *testing.T) {

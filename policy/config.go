@@ -15,9 +15,9 @@
 package policy
 
 import (
-	"cel.dev/cel-go/cel"
-	"cel.dev/cel-go/common/env"
-	"cel.dev/cel-go/ext"
+	"github.com/authzed/cel-go/cel"
+	"github.com/authzed/cel-go/common/env"
+	"github.com/authzed/cel-go/ext"
 )
 
 // FromConfig configures a CEL policy environment from a config file.

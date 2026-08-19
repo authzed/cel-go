@@ -25,12 +25,12 @@ import (
 
 	antlr "github.com/antlr4-go/antlr/v4"
 
-	"cel.dev/cel-go/common"
-	"cel.dev/cel-go/common/ast"
-	"cel.dev/cel-go/common/operators"
-	"cel.dev/cel-go/common/runes"
-	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/parser/gen"
+	"github.com/authzed/cel-go/common"
+	"github.com/authzed/cel-go/common/ast"
+	"github.com/authzed/cel-go/common/operators"
+	"github.com/authzed/cel-go/common/runes"
+	"github.com/authzed/cel-go/common/types"
+	"github.com/authzed/cel-go/parser/gen"
 )
 
 // Parser encapsulates the context necessary to perform parsing for different expressions.
