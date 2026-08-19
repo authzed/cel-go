@@ -48,6 +48,7 @@ go_test(
     deps = [
         "//common/ast:go_default_library",
         "//common/debug:go_default_library",
+        "//common/operators:go_default_library",
         "//common/types:go_default_library",
         "//parser/gen:go_default_library",
         "//test:go_default_library",
