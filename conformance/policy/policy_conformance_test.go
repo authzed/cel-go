@@ -24,12 +24,12 @@ import (
 	"testing"
 
 	"github.com/bazelbuild/rules_go/go/runfiles"
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/types"
-	"github.com/authzed/cel-go/common/types/ref"
-	"github.com/authzed/cel-go/policy"
-	"github.com/authzed/cel-go/tools/celtest"
-	"github.com/authzed/cel-go/tools/compiler"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/policy"
+	"github.com/google/cel-go/tools/celtest"
+	"github.com/google/cel-go/tools/compiler"
 
 	_ "cel.dev/expr/conformance/proto3"
 )

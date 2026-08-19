@@ -24,11 +24,11 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/ast"
-	"github.com/authzed/cel-go/common/types"
-	"github.com/authzed/cel-go/common/types/ref"
-	"github.com/authzed/cel-go/common/types/traits"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/ast"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/common/types/traits"
 )
 
 type clauseImplV2 func(ref.Val) (string, error)

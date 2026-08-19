@@ -4,8 +4,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/authzed/cel-go/common"
-	"github.com/authzed/cel-go/common/types"
+	"github.com/google/cel-go/common"
+	"github.com/google/cel-go/common/types"
 )
 
 // fieldPath represents a selection path to a field from a variable in a CEL environment.

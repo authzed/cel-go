@@ -20,10 +20,10 @@ import (
 
 	antlr "github.com/antlr4-go/antlr/v4"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/env"
-	"github.com/authzed/cel-go/common/types"
-	"github.com/authzed/cel-go/repl/parser"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/env"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/repl/parser"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )

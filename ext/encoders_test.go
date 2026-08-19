@@ -20,8 +20,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/checker"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/checker"
 )
 
 func TestEncoders(t *testing.T) {

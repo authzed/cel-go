@@ -18,9 +18,9 @@ package celtest
 import (
 	"testing"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/ast"
-	"github.com/authzed/cel-go/tools/compiler"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/ast"
+	"github.com/google/cel-go/tools/compiler"
 )
 
 func TestCoverageStats(t *testing.T) {

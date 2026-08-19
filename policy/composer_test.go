@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/ast"
-	"github.com/authzed/cel-go/common/debug"
-	"github.com/authzed/cel-go/ext"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/ast"
+	"github.com/google/cel-go/common/debug"
+	"github.com/google/cel-go/ext"
 )
 
 func TestCompose_SourceInfo(t *testing.T) {

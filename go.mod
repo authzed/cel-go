@@ -1,4 +1,4 @@
-module github.com/authzed/cel-go
+module github.com/google/cel-go
 
 go 1.23.0
 

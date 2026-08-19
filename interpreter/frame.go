@@ -21,9 +21,9 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/authzed/cel-go/common/functions"
-	"github.com/authzed/cel-go/common/types"
-	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/google/cel-go/common/functions"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 )
 
 // evalContext contains the stateful information needed for a single evaluation.

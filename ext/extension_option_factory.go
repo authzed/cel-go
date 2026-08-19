@@ -17,8 +17,8 @@ package ext
 import (
 	"fmt"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/env"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/env"
 )
 
 // ExtensionOptionFactory converts an ExtensionConfig value to a CEL environment option.

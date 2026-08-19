@@ -37,7 +37,7 @@ go_library(
         "test_tag_handler_k8s.go",
         "yaml.go",
     ],
-    importpath = "github.com/authzed/cel-go/policy",
+    importpath = "github.com/google/cel-go/policy",
     deps = [
         "//cel:go_default_library",
         "//common:go_default_library",

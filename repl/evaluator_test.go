@@ -18,11 +18,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/authzed/cel-go/cel"
-	"github.com/authzed/cel-go/common/env"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/env"
 	"github.com/google/go-cmp/cmp"
 
-	proto2pb "github.com/authzed/cel-go/test/proto2pb"
+	proto2pb "github.com/google/cel-go/test/proto2pb"
 )
 
 var testTextDescriptorFile string = "testdata/attribute_context_fds.textproto"

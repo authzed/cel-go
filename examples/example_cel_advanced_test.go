@@ -17,7 +17,7 @@ package examples
 import (
 	"fmt"
 
-	"github.com/authzed/cel-go/cel"
+	"github.com/google/cel-go/cel"
 )
 
 // Example_cel_CommonErrors showcases handling common runtime errors (division by zero, index out of bounds, missing key)

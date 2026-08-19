@@ -1,11 +1,11 @@
-module github.com/authzed/cel-go/conformance
+module github.com/google/cel-go/conformance
 
 go 1.23.0
 
 require (
 	cel.dev/expr v0.25.1
 	github.com/bazelbuild/rules_go v0.49.0
-	github.com/authzed/cel-go v0.26.1
+	github.com/google/cel-go v0.26.1
 	github.com/google/go-cmp v0.7.0
 	google.golang.org/protobuf v1.36.10
 )
@@ -19,4 +19,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 // indirect
 )
 
-replace github.com/authzed/cel-go => ./..
+replace github.com/google/cel-go => ./..

@@ -22,8 +22,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/authzed/cel-go/common/decls"
-	"github.com/authzed/cel-go/common/types"
+	"github.com/google/cel-go/common/decls"
+	"github.com/google/cel-go/common/types"
 )
 
 // NewConfig creates an instance of a YAML serializable CEL environment configuration.

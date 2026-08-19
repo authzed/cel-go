@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/authzed/cel-go/cel/async"
-	"github.com/authzed/cel-go/common/ast"
-	"github.com/authzed/cel-go/common/functions"
-	"github.com/authzed/cel-go/common/types"
-	"github.com/authzed/cel-go/common/types/ref"
-	"github.com/authzed/cel-go/interpreter"
+	"github.com/google/cel-go/cel/async"
+	"github.com/google/cel-go/common/ast"
+	"github.com/google/cel-go/common/functions"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/interpreter"
 )
 
 // Program is an evaluable view of an Ast.

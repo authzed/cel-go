@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/authzed/cel-go/cel"
+	"github.com/google/cel-go/cel"
 )
 
 // Example_cel_Arithmetic showcases negation, basic operations, modulo, and precedence

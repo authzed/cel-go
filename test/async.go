@@ -18,8 +18,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/authzed/cel-go/common/types"
-	"github.com/authzed/cel-go/common/types/ref"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 )
 
 // FakeRPC returns a blocking async function which simulates an RPC that succeeds after a short
