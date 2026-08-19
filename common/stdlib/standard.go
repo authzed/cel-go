@@ -22,14 +22,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/functions"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 )
 
 var (

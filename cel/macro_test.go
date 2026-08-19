@@ -17,8 +17,8 @@ package cel
 import (
 	"testing"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
 )
 
 func TestGlobalVarArgMacro(t *testing.T) {

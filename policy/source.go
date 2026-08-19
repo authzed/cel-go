@@ -15,7 +15,7 @@
 package policy
 
 import (
-	"github.com/google/cel-go/common"
+	"cel.dev/cel-go/common"
 )
 
 // ByteSource converts a byte sequence and location description to a model.Source.

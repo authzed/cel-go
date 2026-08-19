@@ -18,10 +18,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/tools/celtest"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/tools/celtest"
 )
 
 // TestCEL triggers the celtest test runner with a list of custom options which are used to set up

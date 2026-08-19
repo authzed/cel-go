@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 var (

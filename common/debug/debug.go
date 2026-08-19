@@ -22,9 +22,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // Adorner returns debug metadata that will be tacked on to the string

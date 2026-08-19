@@ -24,13 +24,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/cel/async"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/ext"
-	"github.com/google/cel-go/interpreter"
-	"github.com/google/cel-go/test"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/cel/async"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/ext"
+	"cel.dev/cel-go/interpreter"
+	"cel.dev/cel-go/test"
 )
 
 func TestConcurrentEval(t *testing.T) {

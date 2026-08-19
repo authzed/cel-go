@@ -19,7 +19,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 func TestOptionalOptionalOf(t *testing.T) {

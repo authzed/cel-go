@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types/ref"
 
 	"google.golang.org/protobuf/proto"
 

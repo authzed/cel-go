@@ -1,8 +1,8 @@
-module github.com/google/cel-go/ext/security
+module cel.dev/cel-go/ext/security
 
 go 1.23.0
 
-require github.com/google/cel-go v0.31.0
+require cel.dev/cel-go v0.31.0
 
 require (
 	cel.dev/expr v0.25.1 // indirect
@@ -15,4 +15,4 @@ require (
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 
-replace github.com/google/cel-go => ../../
+replace cel.dev/cel-go => ../../

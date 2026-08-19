@@ -5,11 +5,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/debug"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/ext"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/debug"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/ext"
 )
 
 func TestCompose(t *testing.T) {

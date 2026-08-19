@@ -24,10 +24,10 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 func TestCalculateSize(t *testing.T) {

@@ -17,7 +17,7 @@ package types
 import (
 	"reflect"
 
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // StructTypeDescriptor describes a CEL struct type, providing field metadata and value instantiation.

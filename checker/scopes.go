@@ -17,7 +17,7 @@ package checker
 import (
 	"strings"
 
-	"github.com/google/cel-go/common/decls"
+	"cel.dev/cel-go/common/decls"
 )
 
 // Scopes represents nested Decl sets where the Scopes value contains a Groups containing all

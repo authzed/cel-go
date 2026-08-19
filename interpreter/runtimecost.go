@@ -17,12 +17,12 @@ package interpreter
 import (
 	"errors"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/cost"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/cost"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 )
 
 // WARNING: Any changes to cost calculations in this file require a corresponding change in checker/cost.go

@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // AttributePattern represents a top-level variable with an optional set of qualifier patterns.

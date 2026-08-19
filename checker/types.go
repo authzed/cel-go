@@ -15,7 +15,7 @@
 package checker
 
 import (
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/common/types"
 )
 
 // isDyn returns true if the input t is either type DYN or a well-known ANY message.

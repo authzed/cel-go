@@ -20,10 +20,10 @@ package interpreter
 import (
 	"errors"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // PlannerOption configures the program plan options during interpretable setup.

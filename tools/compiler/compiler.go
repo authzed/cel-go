@@ -24,12 +24,12 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/env"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/ext"
-	"github.com/google/cel-go/policy"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/env"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/ext"
+	"cel.dev/cel-go/policy"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
