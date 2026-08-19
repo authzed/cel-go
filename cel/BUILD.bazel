@@ -23,7 +23,7 @@ go_library(
         "validator.go",
     ],
     embedsrcs = ["templates/authoring.tmpl"],
-    importpath = "github.com/google/cel-go/cel",
+    importpath = "cel.dev/cel-go/cel",
     visibility = ["//visibility:public"],
     deps = [
         "//cel/async:go_default_library",

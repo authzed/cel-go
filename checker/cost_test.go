@@ -19,15 +19,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/stdlib"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/parser"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/stdlib"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/parser"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 func TestCost(t *testing.T) {
@@ -766,9 +766,9 @@ func TestCost(t *testing.T) {
 			if len(errs.GetErrors()) != 0 {
 				t.Fatalf("parser.Parse(%v) failed: %v", tc.expr, errs.ToDisplayString())
 			}
-			reg, err := types.NewProtoRegistry(types.ProtoTypeDefs(&proto3pb.TestAllTypes{}))
+			reg, err := types.NewRegistry(types.ProtoTypeDefs(&proto3pb.TestAllTypes{}))
 			if err != nil {
-				t.Fatalf("types.NewProtoRegistry(...) failed: %v", err)
+				t.Fatalf("types.NewRegistry(...) failed: %v", err)
 			}
 
 			e, err := NewEnv(containers.DefaultContainer, reg)

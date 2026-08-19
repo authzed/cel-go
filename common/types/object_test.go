@@ -22,8 +22,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	anypb "google.golang.org/protobuf/types/known/anypb"
@@ -255,5 +255,28 @@ func TestProtoObjectConvertToType(t *testing.T) {
 	}
 	if objVal.ConvertToType(objVal.Type()) != objVal {
 		t.Error("identity type conversion failed")
+	}
+}
+
+func TestProtoObjectCalculateSize(t *testing.T) {
+	msg := &exprpb.ParsedExpr{
+		SourceInfo: &exprpb.SourceInfo{
+			LineOffsets: []int32{1, 2, 3},
+		},
+	}
+	reg := newTestRegistry(t, ProtoTypeDefs(msg))
+	objVal := reg.NativeToValue(msg)
+	sizer, ok := objVal.(AggregateSizeVisitor)
+	if !ok {
+		t.Fatalf("expected AggregateSizeVisitor implementation for protoObj")
+	}
+	// 1 (protoObj container) + SourceInfo field (1 container + 1 list container + 3 list elements = 5) = 6
+	if got := sizer.AggregateSize(NewSizeCalculator()); got != 6 {
+		t.Errorf("got aggregate size %d, want 6", got)
+	}
+
+	nilObj := &protoObj{}
+	if got := nilObj.AggregateSize(NewSizeCalculator()); got != 0 {
+		t.Errorf("got nil protoObj aggregate size %d, want 0", got)
 	}
 }

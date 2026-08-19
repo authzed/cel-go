@@ -18,17 +18,17 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/stdlib"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/parser"
+	"cel.dev/cel-go/checker"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/stdlib"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/parser"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 func TestNavigateAST(t *testing.T) {
@@ -669,9 +669,13 @@ func mustTypeCheck(t testing.TB, expr string, opts ...any) *ast.AST {
 
 func newTestRegistry(t testing.TB, opts ...types.RegistryOption) *types.Registry {
 	t.Helper()
-	reg, err := types.NewProtoRegistry(opts...)
+	var o []any
+	for _, opt := range opts {
+		o = append(o, opt)
+	}
+	reg, err := types.NewRegistry(o...)
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	return reg
 }

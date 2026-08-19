@@ -1,4 +1,4 @@
-module github.com/google/cel-go
+module cel.dev/cel-go
 
 go 1.23.0
 

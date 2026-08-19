@@ -23,7 +23,7 @@ go_library(
         "expr.go",
         "suite.go",
     ],
-    importpath = "github.com/google/cel-go/test",
+    importpath = "cel.dev/cel-go/test",
     deps = [
         "//common/operators:go_default_library",
         "//common/types:go_default_library",

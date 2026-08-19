@@ -25,11 +25,11 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
 )
 
 func TestConfig(t *testing.T) {
@@ -748,9 +748,9 @@ func TestVariableAsCELVariable(t *testing.T) {
 		},
 	}
 
-	tp, err := types.NewProtoRegistry()
+	tp, err := types.NewRegistry()
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	tp.RegisterType(types.NewOpaqueType("set", types.NewTypeParamType("T")))
 	for _, tst := range tests {
@@ -936,9 +936,9 @@ func TestFunctionAsCELFunction(t *testing.T) {
 					types.NewTypeParamType("T"))),
 		},
 	}
-	tp, err := types.NewProtoRegistry()
+	tp, err := types.NewRegistry()
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	tp.RegisterType(types.NewOpaqueType("set", types.NewTypeParamType("T")))
 	for _, tst := range tests {
@@ -1047,9 +1047,9 @@ func TestTypeDescAsCELTypeErrors(t *testing.T) {
 			want: errors.New("undefined type"),
 		},
 	}
-	tp, err := types.NewProtoRegistry()
+	tp, err := types.NewRegistry()
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	tp.RegisterType(types.NewOpaqueType("set", types.NewTypeParamType("T")))
 	for _, tst := range tests {
@@ -1534,7 +1534,7 @@ func unmarshalYAML(t *testing.T, data []byte) *Config {
 	t.Helper()
 	config, err := ConfigFromYAML(data)
 	if err != nil {
-		t.Fatalf("ConfigFromYaml(%q) failed: %v", string(data), err)
+		t.Fatalf("ConfigFromYAML(%q) failed: %v", string(data), err)
 	}
 	return config
 }

@@ -10,5 +10,5 @@ go_library(
     srcs = [
         "operators.go",
     ],
-    importpath = "github.com/google/cel-go/common/operators",
+    importpath = "cel.dev/cel-go/common/operators",
 )

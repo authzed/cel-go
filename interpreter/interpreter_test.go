@@ -25,26 +25,26 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/stdlib"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
-	"github.com/google/cel-go/parser"
+	"cel.dev/cel-go/checker"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/functions"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/stdlib"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
+	"cel.dev/cel-go/parser"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	tpb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto2pb "cel.dev/cel-go/test/proto2pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 type testCase struct {
@@ -2113,6 +2113,72 @@ func TestInterpreter_InterruptableEval(t *testing.T) {
 	}
 }
 
+func TestInterpreter_RegexProgramSizeLimit(t *testing.T) {
+	tcConst := testCase{
+		expr: `'hello'.matches('(a|b)*[0-9]+')`,
+	}
+	_, _, err := program(t, &tcConst, RegexProgramSizeLimit(5))
+	if err == nil {
+		t.Fatalf("expected program creation error for constant regex exceeding limit")
+	}
+	if !strings.Contains(err.Error(), "regex program size 8 exceeds limit of 5") {
+		t.Errorf("got error %v, wanted error containing 'regex program size 8 exceeds limit of 5'", err)
+	}
+
+	tcDyn := testCase{
+		expr: `'hello'.matches(pattern)`,
+		vars: []*decls.VariableDecl{
+			decls.NewVariable("pattern", types.StringType),
+		},
+		in: map[string]any{
+			"pattern": "(a|b)*[0-9]+",
+		},
+	}
+	prg, frame, err := program(t, &tcDyn, RegexProgramSizeLimit(5))
+	if err != nil {
+		t.Fatalf("program() failed: %v", err)
+	}
+	out := prg.Exec(frame)
+	frame.Close()
+	if !types.IsError(out) || !strings.Contains(out.(*types.Err).String(), "regex program size 8 exceeds limit of 5") {
+		t.Errorf("got %v, wanted regex program size limit error", out)
+	}
+
+	tcValid := testCase{
+		expr: `'hello'.matches(pattern)`,
+		vars: []*decls.VariableDecl{
+			decls.NewVariable("pattern", types.StringType),
+		},
+		in: map[string]any{
+			"pattern": "el*",
+		},
+		out: true,
+	}
+	prgValid, frameValid, err := program(t, &tcValid, RegexProgramSizeLimit(5))
+	if err != nil {
+		t.Fatalf("program() failed: %v", err)
+	}
+	outValid := prgValid.Exec(frameValid)
+	frameValid.Close()
+	if outValid != types.True {
+		t.Errorf("got %v, wanted true", outValid)
+	}
+
+	// Non-regex function should not be modified by RegexProgramSizeLimit decorator
+	tcOther := testCase{
+		expr: `'hello'.contains('e')`,
+	}
+	prgOther, frameOther, err := program(t, &tcOther, RegexProgramSizeLimit(5))
+	if err != nil {
+		t.Fatalf("program() failed: %v", err)
+	}
+	outOther := prgOther.Exec(frameOther)
+	frameOther.Close()
+	if outOther != types.True {
+		t.Errorf("got %v, wanted true", outOther)
+	}
+}
+
 func TestInterpreter_ExhaustiveLogicalOrEquals(t *testing.T) {
 	// a || b == "b"
 	// Operator "==" is at Expr 4, should be evaluated though "a" is true
@@ -2573,9 +2639,13 @@ func newTestEnv(t testing.TB, cont *containers.Container, reg *types.Registry) *
 
 func newTestRegistry(t testing.TB, opts ...types.RegistryOption) *types.Registry {
 	t.Helper()
-	reg, err := types.NewProtoRegistry(opts...)
+	var o []any
+	for _, opt := range opts {
+		o = append(o, opt)
+	}
+	reg, err := types.NewRegistry(o...)
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	return reg
 }

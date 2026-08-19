@@ -18,12 +18,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/stdlib"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/parser"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/stdlib"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/parser"
 )
 
 func TestOverlappingMacro(t *testing.T) {
@@ -74,20 +74,6 @@ func BenchmarkNewStdEnv(b *testing.B) {
 		if err != nil {
 			b.Fatalf("env.AddFunctions(stdlib.Functions()...) failed: %v", err)
 		}
-	}
-}
-
-func BenchmarkCopyDeclarations(b *testing.B) {
-	env, err := NewEnv(containers.DefaultContainer, newTestRegistry(b))
-	if err != nil {
-		b.Fatalf("NewEnv() failed: %v", err)
-	}
-	err = env.AddFunctions(stdlib.Functions()...)
-	if err != nil {
-		b.Fatalf("env.AddFunctions(stdlib.Functions()...) failed: %v", err)
-	}
-	for i := 0; i < b.N; i++ {
-		env.validatedDeclarations().Copy()
 	}
 }
 

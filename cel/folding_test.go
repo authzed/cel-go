@@ -25,13 +25,13 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/interpreter"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/interpreter"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
@@ -44,6 +44,38 @@ func TestConstantFoldingOptimizer(t *testing.T) {
 		{
 			expr:   `[1, 1 + 2, 1 + (2 + 3)]`,
 			folded: `[1, 3, 6]`,
+		},
+		{
+			expr:   `[1, 2] + [3, 4]`,
+			folded: `[1, 2, 3, 4]`,
+		},
+		{
+			expr:   `[1, ?optional.of(2)] + [3, 4]`,
+			folded: `[1, 2, 3, 4]`,
+		},
+		{
+			expr:   `[1, ?optional.none()] + [2]`,
+			folded: `[1, 2]`,
+		},
+		{
+			expr:   `[x, 1] + [2, y]`,
+			folded: `[x, 1, 2, y]`,
+		},
+		{
+			expr:   `[x, ?optional.of(1)] + [?optional.of(2), y]`,
+			folded: `[x, 1, 2, y]`,
+		},
+		{
+			expr:   `[1] + [x] + [2]`,
+			folded: `[1, x, 2]`,
+		},
+		{
+			expr:   `[1] + [?x] + [2]`,
+			folded: `[1, ?x, 2]`,
+		},
+		{
+			expr:   `[?x, 1] + [2, ?y]`,
+			folded: `[?x, 1, 2, ?y]`,
 		},
 		{
 			expr:   `6 in [1, 1 + 2, 1 + (2 + 3)]`,
@@ -516,7 +548,7 @@ func TestConstantFoldingOptimizer(t *testing.T) {
 		},
 		{
 			expr:   `[1] + [x]`,
-			folded: `[1] + [x]`,
+			folded: `[1, x]`,
 		},
 
 		{

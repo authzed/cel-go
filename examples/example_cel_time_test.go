@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/google/cel-go/cel"
+	"cel.dev/cel-go/cel"
 )
 
 // Example_cel_TimestampsAndDurations showcases timestamps, durations, arithmetic, and field access

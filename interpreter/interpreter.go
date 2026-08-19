@@ -20,10 +20,10 @@ package interpreter
 import (
 	"errors"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 // PlannerOption configures the program plan options during interpretable setup.
@@ -101,7 +101,6 @@ func EvalStateObserver(opts ...evalStateOption) PlannerOption {
 			return nil, errors.New("eval state factory not configured")
 		}
 		p.observers = append(p.observers, et)
-		p.decorators = append(p.decorators, decObserveEval(et.Observe))
 		return p, nil
 	}
 }
@@ -225,6 +224,11 @@ type RegexOptimization struct {
 // compile errors.
 func CompileRegexConstants(regexOptimizations ...*RegexOptimization) PlannerOption {
 	return CustomDecoratorV2(decRegexOptimizer(regexOptimizations...))
+}
+
+// RegexProgramSizeLimit caps the maximum regex program plan size permitted during evaluation.
+func RegexProgramSizeLimit(limit int) PlannerOption {
+	return CustomDecoratorV2(decRegexProgramSizeLimit(limit))
 }
 
 type exprInterpreter struct {

@@ -20,11 +20,12 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/interpreter"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/checker"
+	"cel.dev/cel-go/common/cost"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/interpreter"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -184,8 +185,8 @@ func estimateDecode(estimator checker.CostEstimator, target *checker.AstNode, ar
 
 func trackEncode(args []ref.Val, _ ref.Val) *uint64 {
 	sz := actualSize(args[0])
-	cost := uint64(math.Ceil(float64(sz)*stringCostFactor)) + callCost
-	return &cost
+	total := cost.SafeAdd(cost.SafeMultiplyByFactor(sz, stringCostFactor), callCost)
+	return &total
 }
 
 func trackJSONEncode(args []ref.Val, _ ref.Val) *uint64 {
@@ -195,8 +196,8 @@ func trackJSONEncode(args []ref.Val, _ ref.Val) *uint64 {
 
 func trackDecode(args []ref.Val, _ ref.Val) *uint64 {
 	sz := actualSize(args[0])
-	cost := uint64(math.Ceil(float64(sz)*stringCostFactor)) + callCost
-	return &cost
+	total := cost.SafeAdd(cost.SafeMultiplyByFactor(sz, stringCostFactor), callCost)
+	return &total
 }
 
 func estimateEncodeSize(sz checker.SizeEstimate) checker.SizeEstimate {

@@ -24,8 +24,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	dpb "google.golang.org/protobuf/types/known/durationpb"
@@ -928,5 +928,69 @@ func TestConcatListSizeCached(t *testing.T) {
 		if list.Size() != Int(201) {
 			t.Errorf("Size() returned inconsistent value on call %d", i)
 		}
+	}
+}
+
+func TestListCalculateSize(t *testing.T) {
+	adapter := DefaultTypeAdapter
+
+	// List literal: [1, [3, 4], [[7, 8], [9, 10]]]
+	l1 := NewRefValList(adapter, []ref.Val{Int(3), Int(4)})
+	l2_1 := NewRefValList(adapter, []ref.Val{Int(7), Int(8)})
+	l2_2 := NewRefValList(adapter, []ref.Val{Int(9), Int(10)})
+	l2 := NewRefValList(adapter, []ref.Val{l2_1, l2_2})
+	nested := NewRefValList(adapter, []ref.Val{Int(1), l1, l2})
+
+	tests := []struct {
+		name string
+		val  ref.Val
+		want uint32
+	}{
+		{
+			name: "empty_list",
+			val:  NewRefValList(adapter, []ref.Val{}),
+			want: 1,
+		},
+		{
+			name: "flat_list",
+			val:  l1,
+			want: 3,
+		},
+		{
+			name: "nested_list",
+			val:  nested,
+			want: 12,
+		},
+		{
+			name: "concat_list",
+			val:  l1.Add(l2_1),
+			want: 6,
+		},
+		{
+			name: "string_list",
+			val:  NewStringList(adapter, []string{"hello", "world"}),
+			want: 3, // 1 (container) + 1 ("hello" unit) + 1 ("world" unit) = 3
+		},
+		{
+			name: "dynamic_list",
+			val:  NewDynamicList(adapter, []any{int64(1), []int64{3, 4}}),
+			want: 5,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			sizer, ok := tc.val.(AggregateSizeVisitor)
+			if !ok {
+				t.Fatalf("expected AggregateSizeVisitor implementation for %T", tc.val)
+			}
+			if got := sizer.AggregateSize(NewSizeCalculator()); got != tc.want {
+				t.Errorf("got aggregate size %d, want %d", got, tc.want)
+			}
+			// Caching check (memoized aggSize)
+			if got := sizer.AggregateSize(NewSizeCalculator()); got != tc.want {
+				t.Errorf("memoized AggregateSize() got %d, want %d", got, tc.want)
+			}
+		})
 	}
 }

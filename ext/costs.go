@@ -17,12 +17,12 @@ package ext
 import (
 	"math"
 
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/checker"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 )
 
 var (
@@ -66,6 +66,8 @@ func actualSize(value ref.Val) uint64 {
 	return 1
 }
 
+// nodeAsUintValue returns the value of a literal int node as a uint64, or the default value if the
+// node is not a non-negative int literal.
 func nodeAsUintValue(node checker.AstNode, defaultVal uint64) uint64 {
 	if node.Expr().Kind() != ast.LiteralKind {
 		return defaultVal
@@ -101,22 +103,4 @@ func atLeastOne(size checker.SizeEstimate) checker.SizeEstimate {
 		size.Max = 1
 	}
 	return size
-}
-
-func safeAdd(x, y uint64, rest ...uint64) uint64 {
-	if y > 0 && x > math.MaxUint64-y {
-		return math.MaxUint64
-	}
-	next := x + y
-	if len(rest) == 0 {
-		return next
-	}
-	return safeAdd(next, rest[0], rest[1:]...)
-}
-
-func safeMul(x, y uint64) uint64 {
-	if y != 0 && x > math.MaxUint64/y {
-		return math.MaxUint64
-	}
-	return x * y
 }

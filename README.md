@@ -1,14 +1,14 @@
 # Common Expression Language
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/google/cel-go)](https://goreportcard.com/report/github.com/google/cel-go)
-[![GoDoc](https://godoc.org/github.com/google/cel-go?status.svg)][6]
+[![Go Report Card](https://goreportcard.com/badge/cel.dev/cel-go)](https://goreportcard.com/report/cel.dev/cel-go)
+[![GoDoc](https://pkg.go.dev/badge/cel.dev/cel-go.svg)][6]
 
 > [!WARNING]
 > **On June 16, 2026, this repository will move to
 > github.com/cel-expr/cel-go!**
 >
 > Please update your links and dependencies. See the [pinned
-> issue](https://github.com/google/cel-go/issues/1329) for details.
+> issue](https://github.com/cel-expr/cel-go/issues/1329) for details.
 
 The Common Expression Language (CEL) is a non-Turing complete language designed
 for simplicity, speed, safety, and portability. CEL's C-like [syntax][1] looks
@@ -64,7 +64,7 @@ Let's expose `name` and  `group` variables to CEL using the `cel.Variable`
 environment option:
 
 ```go
-import "github.com/google/cel-go/cel"
+import "cel.dev/cel-go/cel"
 
 env, err := cel.NewEnv(
     cel.Variable("name", cel.StringType),
@@ -285,9 +285,9 @@ bazel test ...
 
 Released under the [Apache License](LICENSE).
 
-[1]:  https://github.com/google/cel-spec
+[1]:  https://github.com/cel-expr/cel-spec
 [2]:  https://groups.google.com/forum/#!forum/cel-go-discuss
-[3]:  https://github.com/google/cel-cpp
-[4]:  https://github.com/google/cel-go/issues
+[3]:  https://github.com/cel-expr/cel-cpp
+[4]:  https://github.com/cel-expr/cel-go/issues
 [5]:  https://bazel.build
-[6]:  https://godoc.org/github.com/google/cel-go
+[6]:  https://pkg.go.dev/cel.dev/cel-go

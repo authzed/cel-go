@@ -18,12 +18,13 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync/atomic"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
 
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -110,14 +111,13 @@ func NewMutableList(adapter Adapter) traits.MutableLister {
 type baseList struct {
 	Adapter
 	value any
-
-	// size indicates the number of elements within the list.
-	// Since objects are immutable the size of a list is static.
-	size int
-
-	// get returns a value at the specified integer index.
-	// The index is guaranteed to be checked against the list index range.
-	get func(int) any
+	size  int
+	// aggSize memoizes the aggregate size computed by the first completed sizing of this
+	// list. Accessed atomically since immutable lists may be shared across concurrent
+	// evaluations; zero means not yet computed. See the SizeCalculator documentation for
+	// the memoization contract.
+	aggSize uint32
+	get     func(int) any
 }
 
 // Add implements the traits.Adder interface method.
@@ -269,6 +269,21 @@ func (l *baseList) Size() ref.Val {
 	return Int(l.size)
 }
 
+// AggregateSize implements the AggregateSizeVisitor interface method.
+func (l *baseList) AggregateSize(sizer AggregateSizer) uint32 {
+	if sz := atomic.LoadUint32(&l.aggSize); sz != 0 {
+		return sz
+	}
+	total := uint32(1)
+	for i := range l.size {
+		total = safeAddUint32(total, sizer.AggregateSize(l.get(i)))
+	}
+	if cacheableAggregateSize(sizer) {
+		atomic.StoreUint32(&l.aggSize, total)
+	}
+	return total
+}
+
 // Type implements the ref.Val interface method.
 func (l *baseList) Type() ref.Type {
 	return ListType
@@ -322,11 +337,13 @@ func (l *mutableList) Add(other ref.Val) ref.Val {
 	case *mutableList:
 		l.mutableValues = append(l.mutableValues, otherList.mutableValues...)
 		l.size += len(otherList.mutableValues)
+		atomic.StoreUint32(&l.aggSize, 0)
 	case traits.Lister:
 		for i := IntZero; i < otherList.Size().(Int); i++ {
 			l.size++
 			l.mutableValues = append(l.mutableValues, otherList.Get(i))
 		}
+		atomic.StoreUint32(&l.aggSize, 0)
 	default:
 		return MaybeNoSuchOverloadErr(otherList)
 	}
@@ -478,6 +495,11 @@ func (l *concatList) Iterator() traits.Iterator {
 // Size implements the traits.Sizer interface method.
 func (l *concatList) Size() ref.Val {
 	return l.cachedSize
+}
+
+// AggregateSize implements the AggregateSizeVisitor interface method.
+func (l *concatList) AggregateSize(sizer AggregateSizer) uint32 {
+	return safeAddUint32(sizer.AggregateSize(l.prevList), sizer.AggregateSize(l.nextList))
 }
 
 // String converts the concatenated list to a human-readable string.

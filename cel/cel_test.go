@@ -32,17 +32,17 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/google/cel-go/checker"
-	celast "github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/env"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
-	"github.com/google/cel-go/interpreter"
-	"github.com/google/cel-go/parser"
-	"github.com/google/cel-go/test"
+	"cel.dev/cel-go/checker"
+	celast "cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/env"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
+	"cel.dev/cel-go/interpreter"
+	"cel.dev/cel-go/parser"
+	"cel.dev/cel-go/test"
 
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	descpb "google.golang.org/protobuf/types/descriptorpb"
@@ -51,8 +51,8 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto2pb "cel.dev/cel-go/test/proto2pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 func Test_ExampleWithBuiltins(t *testing.T) {
@@ -94,6 +94,90 @@ func Test_ExampleWithBuiltins(t *testing.T) {
 		t.Errorf(`got '%v', wanted "Hello world! I'm CEL."`, out.Value())
 	}
 }
+
+func TestExtendCheckerParity(t *testing.T) {
+	// Base environment carrying standard library functions
+	baseEnv, err := NewEnv(
+		Variable("baseVar", StringType),
+	)
+	if err != nil {
+		t.Fatalf("NewEnv() failed: %v", err)
+	}
+
+	// Extended environment adding child variables (K8s CRD pattern)
+	extEnv, err := baseEnv.Extend(
+		Variable("value", StringType),
+		Variable("oldValue", StringType),
+	)
+	if err != nil {
+		t.Fatalf("baseEnv.Extend() failed: %v", err)
+	}
+
+	// Equivalent flat environment created from scratch
+	flatEnv, err := NewEnv(
+		Variable("baseVar", StringType),
+		Variable("value", StringType),
+		Variable("oldValue", StringType),
+	)
+	if err != nil {
+		t.Fatalf("flat NewEnv() failed: %v", err)
+	}
+
+	testCases := []struct {
+		expr string
+		vars map[string]any
+		want ref.Val
+	}{
+		{
+			expr: `value + " " + oldValue + " " + baseVar`,
+			vars: map[string]any{"value": "new", "oldValue": "old", "baseVar": "base"},
+			want: types.String("new old base"),
+		},
+		{
+			expr: `size(value) > 0 && [1, 2, 3].exists(x, x > 2)`,
+			vars: map[string]any{"value": "test"},
+			want: types.True,
+		},
+	}
+
+	for _, tc := range testCases {
+		extAst, extIss := extEnv.Compile(tc.expr)
+		if extIss.Err() != nil {
+			t.Fatalf("extEnv.Compile(%q) failed: %v", tc.expr, extIss.Err())
+		}
+		flatAst, flatIss := flatEnv.Compile(tc.expr)
+		if flatIss.Err() != nil {
+			t.Fatalf("flatEnv.Compile(%q) failed: %v", tc.expr, flatIss.Err())
+		}
+
+		if extAst.OutputType().TypeName() != flatAst.OutputType().TypeName() {
+			t.Errorf("OutputType mismatch for %q: ext %v, flat %v", tc.expr, extAst.OutputType(), flatAst.OutputType())
+		}
+
+		extPrg, err := extEnv.Program(extAst)
+		if err != nil {
+			t.Fatalf("extEnv.Program() failed: %v", err)
+		}
+		flatPrg, err := flatEnv.Program(flatAst)
+		if err != nil {
+			t.Fatalf("flatEnv.Program() failed: %v", err)
+		}
+
+		extOut, _, err := extPrg.Eval(tc.vars)
+		if err != nil {
+			t.Fatalf("extPrg.Eval() failed: %v", err)
+		}
+		flatOut, _, err := flatPrg.Eval(tc.vars)
+		if err != nil {
+			t.Fatalf("flatPrg.Eval() failed: %v", err)
+		}
+
+		if extOut.Equal(tc.want) != types.True || flatOut.Equal(tc.want) != types.True {
+			t.Errorf("Eval result mismatch for %q: ext %v, flat %v, want %v", tc.expr, extOut, flatOut, tc.want)
+		}
+	}
+}
+
 
 func TestCompile(t *testing.T) {
 	prg, err := Compile(`"hello " + name`, Variable("name", StringType))
@@ -1599,6 +1683,64 @@ func TestVariadicLogicalOperators(t *testing.T) {
 	}
 }
 
+func TestCostTrackingWithStateTracking(t *testing.T) {
+	// Cost tracking and state tracking install separate observers. Every observer has to see
+	// every evaluation step, whichever combination of them is configured.
+	env := testEnv(t, Variable("a", StringType))
+	ast, iss := env.Compile(`a.startsWith("x") && a.contains("yz")`)
+	if iss.Err() != nil {
+		t.Fatalf("env.Compile() failed: %v", iss.Err())
+	}
+	baseline, _ := evalCostAndState(t, env, ast, CostTracking(nil))
+	if baseline == 0 {
+		t.Fatalf("cost tracking alone reported a cost of 0")
+	}
+	tests := []struct {
+		name       string
+		opts       []ProgramOption
+		wantState  bool
+		wantEqCost bool
+	}{
+		{name: "cost", opts: []ProgramOption{CostTracking(nil)}, wantEqCost: true},
+		{name: "cost and state", opts: []ProgramOption{CostTracking(nil), EvalOptions(OptTrackState)},
+			wantState: true, wantEqCost: true},
+		{name: "cost and exhaustive", opts: []ProgramOption{CostTracking(nil), EvalOptions(OptExhaustiveEval)},
+			wantState: true, wantEqCost: true},
+	}
+	for _, tst := range tests {
+		tc := tst
+		t.Run(tc.name, func(t *testing.T) {
+			cost, hasState := evalCostAndState(t, env, ast, tc.opts...)
+			if tc.wantEqCost && cost != baseline {
+				t.Errorf("actual cost got %d, wanted %d", cost, baseline)
+			}
+			if hasState != tc.wantState {
+				t.Errorf("state tracked got %t, wanted %t", hasState, tc.wantState)
+			}
+		})
+	}
+}
+
+// evalCostAndState evaluates the ast and reports the tracked cost along with whether evaluation
+// state was recorded.
+func evalCostAndState(t *testing.T, env *Env, ast *Ast, opts ...ProgramOption) (uint64, bool) {
+	t.Helper()
+	prg, err := env.Program(ast, opts...)
+	if err != nil {
+		t.Fatalf("env.Program() failed: %v", err)
+	}
+	_, det, err := prg.Eval(map[string]any{"a": "xyz-abcdefghij"})
+	if err != nil {
+		t.Fatalf("prg.Eval() failed: %v", err)
+	}
+	cost := det.ActualCost()
+	if cost == nil {
+		t.Fatalf("det.ActualCost() returned nil")
+	}
+	state := det.State()
+	return *cost, state != nil && len(state.IDs()) != 0
+}
+
 func TestParseError(t *testing.T) {
 	env := testEnv(t)
 	_, iss := env.Parse("invalid & logical_and")
@@ -2504,6 +2646,96 @@ func TestRegexOptimizer(t *testing.T) {
 	}
 }
 
+func TestRegexProgramSizeLimit(t *testing.T) {
+	env, err := NewEnv(
+		Variable("pattern", StringType),
+		RegexProgramSizeLimit(5),
+	)
+	if err != nil {
+		t.Fatalf("NewEnv failed: %v", err)
+	}
+
+	tests := []struct {
+		name       string
+		expr       string
+		progOpts   []ProgramOption
+		vars       any
+		want       ref.Val
+		compileErr string
+		progErr    string
+		evalErr    string
+	}{
+		{
+			name:       "constant_regex_exceeds_limit_ast_validation",
+			expr:       `"123 abc 456".matches('(a|b)*[0-9]+')`,
+			compileErr: "regex program size 8 exceeds limit of 5",
+		},
+		{
+			name:    "dynamic_regex_exceeds_limit_runtime",
+			expr:    `"123 abc 456".matches(pattern)`,
+			vars:    map[string]any{"pattern": "(a|b)*[0-9]+"},
+			evalErr: "regex program size 8 exceeds limit of 5",
+		},
+		{
+			name: "dynamic_regex_within_limit",
+			expr: `"123 abc 456".matches(pattern)`,
+			vars: map[string]any{"pattern": "[0-9]+"},
+			want: types.True,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			ast, iss := env.Compile(tc.expr)
+			if tc.compileErr != "" {
+				if iss.Err() == nil {
+					tt.Fatalf("env.Compile(%s) succeeded, wanted error %s", tc.expr, tc.compileErr)
+				}
+				if !strings.Contains(iss.Err().Error(), tc.compileErr) {
+					tt.Errorf("got compile error %v, wanted error containing %s", iss.Err(), tc.compileErr)
+				}
+				return
+			}
+			if iss.Err() != nil {
+				tt.Fatalf("env.Compile(%s) failed: %v", tc.expr, iss.Err())
+			}
+			prg, err := env.Program(ast, tc.progOpts...)
+			if tc.progErr != "" {
+				if err == nil {
+					tt.Fatalf("env.Program(%s) succeeded, wanted error %s", tc.expr, tc.progErr)
+				}
+				if !strings.Contains(err.Error(), tc.progErr) {
+					tt.Errorf("got program error %v, wanted error containing %s", err, tc.progErr)
+				}
+				return
+			}
+			if err != nil {
+				tt.Fatalf("env.Program(%s) failed: %v", tc.expr, err)
+			}
+			vars := tc.vars
+			if vars == nil {
+				vars = NoVars()
+			}
+			res, _, err := prg.Eval(vars)
+			if tc.evalErr != "" {
+				if err == nil {
+					tt.Fatalf("prg.Eval(%s) succeeded, wanted error %s", tc.expr, tc.evalErr)
+				}
+				if !strings.Contains(err.Error(), tc.evalErr) {
+					tt.Errorf("got eval error %v, wanted error containing %s", err, tc.evalErr)
+				}
+				return
+			}
+			if err != nil {
+				tt.Fatalf("prg.Eval(%s) failed: %v", tc.expr, err)
+			}
+			if res != tc.want {
+				tt.Errorf("got %v, wanted %v", res, tc.want)
+			}
+		})
+	}
+}
+
 func TestDefaultUTCTimeZoneDisabled(t *testing.T) {
 	testEnvs := []struct {
 		name string
@@ -2697,6 +2929,27 @@ func TestDefaultUTCTimeZoneError(t *testing.T) {
 	})
 	if err == nil {
 		t.Fatalf("prg.Eval() got %v wanted error", out)
+	}
+}
+
+func TestTimeZoneOffsetOutOfRange(t *testing.T) {
+	env := testEnv(t, Variable("x", TimestampType))
+	vars := map[string]any{"x": time.Unix(7506, 0).UTC()}
+	// Offsets whose hour or minute component falls outside a signed HH:MM field
+	// shift the resolved instant, so they must be rejected at evaluation time.
+	for _, tz := range []string{"+24:00", "-24:00", "+99:00", "-50:30", "+00:99", "+05:-30"} {
+		out, err := interpret(t, env, `x.getHours('`+tz+`') >= 0`, vars)
+		if err == nil {
+			t.Errorf("getHours(%q) got %v, wanted error", tz, out)
+		}
+	}
+	// A boundary offset within the field ranges keeps resolving.
+	out, err := interpret(t, env, `x.getHours('23:15')`, vars)
+	if err != nil {
+		t.Fatalf("getHours('23:15') failed: %v", err)
+	}
+	if out.Equal(types.Int(1)) != types.True {
+		t.Errorf("getHours('23:15') got %v, wanted 1", out)
 	}
 }
 
@@ -3105,6 +3358,18 @@ func TestOptionalValuesEval(t *testing.T) {
 				"x": types.OptionalOf(types.Int(42)),
 			},
 			out: types.OptionalOf(types.Int(43)),
+		},
+		{
+			expr: `{0: 10}[?0].optMap(v, v + 1)`,
+			out:  types.OptionalOf(types.Int(11)),
+		},
+		{
+			expr: `{0: 10}[?0].optMap(a, a + 1).optMap(b, b * 2)`,
+			out:  types.OptionalOf(types.Int(22)),
+		},
+		{
+			expr: `{0: 10}[?1].optMap(a, a + 1).optMap(b, b * 2)`,
+			out:  types.OptionalNone,
 		},
 		{
 			expr: `optional.ofNonZeroValue(z).or(optional.of(10)).value() == 42`,
@@ -3724,9 +3989,9 @@ func TestExpressionNodeLimit(t *testing.T) {
 		{
 			name:         "chained optMap of various complexity exceeding default limit",
 			expr:         "x.optMap(a, [a, a]).optMap(b, {b: b}).optMap(c, c + 1).optMap(d, d + 2).optMap(e, e + 3).optMap(f, f + 4).optMap(g, g + 5).optMap(h, h + 6).optMap(i, i + 7).optMap(j, j + 8).optMap(k, k + 9).optMap(l, l + 10).optMap(m, m + 11).optMap(n, n + 12)",
-			limit:        0, // default limit 100,000
+			limit:        200, // default limit 100,000
 			expectErr:    true,
-			errSubstring: "expression count exceeds limit of 100000 while expanding macro 'optMap'",
+			errSubstring: "expression count exceeds limit of 200 while expanding macro 'optMap'",
 		},
 		{
 			name:      "chained optMap with unbounded limit (-1)",
@@ -3875,6 +4140,90 @@ func BenchmarkDynamicDispatch(b *testing.B) {
 	b.Run("DynamicDispatch", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			prgDyn.Eval(NoVars())
+		}
+	})
+}
+
+func BenchmarkProgramPlan(b *testing.B) {
+	b.Run("NewEnv", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := NewEnv(
+				Variable("ai", IntType),
+				Variable("ar", MapType(StringType, StringType)),
+			)
+			if err != nil {
+				b.Fatalf("NewEnv() failed: %v", err)
+			}
+		}
+	})
+
+	baseEnv, err := NewEnv()
+	if err != nil {
+		b.Fatalf("NewEnv() failed: %v", err)
+	}
+
+	b.Run("ExtendEnv", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := baseEnv.Extend(
+				Variable("ai", IntType),
+				Variable("ar", MapType(StringType, StringType)),
+			)
+			if err != nil {
+				b.Fatalf("baseEnv.Extend() failed: %v", err)
+			}
+		}
+	})
+
+	env, err := baseEnv.Extend(
+		Variable("ai", IntType),
+		Variable("ar", MapType(StringType, StringType)),
+	)
+	if err != nil {
+		b.Fatalf("Extend() failed: %v", err)
+	}
+	astSimple, iss := env.Compile("ai == 20 || ar['foo'] == 'bar'")
+	if iss.Err() != nil {
+		b.Fatalf("env.Compile() failed: %v", iss.Err())
+	}
+	astOpt, iss := env.Compile("ai in [10, 20, 30] || 'foo' in ar")
+	if iss.Err() != nil {
+		b.Fatalf("env.Compile() failed: %v", iss.Err())
+	}
+
+	b.Run("Default", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := env.Program(astSimple)
+			if err != nil {
+				b.Fatalf("env.Program() failed: %v", err)
+			}
+		}
+	})
+
+	b.Run("OptimizeUnneeded", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := env.Program(astSimple, EvalOptions(OptOptimize))
+			if err != nil {
+				b.Fatalf("env.Program() failed: %v", err)
+			}
+		}
+	})
+
+	b.Run("OptimizeNeeded", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			_, err := env.Program(astOpt, EvalOptions(OptOptimize))
+			if err != nil {
+				b.Fatalf("env.Program() failed: %v", err)
+			}
 		}
 	})
 }
@@ -4030,9 +4379,9 @@ func TestJSONFieldNamesInvalidProvider(t *testing.T) {
 	type wrapperRegistry struct {
 		*types.Registry
 	}
-	reg, err := types.NewProtoRegistry(types.JSONFieldNames(true))
+	reg, err := types.NewRegistry(types.JSONFieldNames(true))
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	wrapped := wrapperRegistry{Registry: reg}
 	_, err = NewEnv(CustomTypeProvider(wrapped), CustomTypeAdapter(reg), JSONFieldNames(true))

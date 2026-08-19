@@ -26,16 +26,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/pb"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
-	"github.com/google/cel-go/test"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/pb"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
+	"cel.dev/cel-go/test"
 
 	structpb "google.golang.org/protobuf/types/known/structpb"
 
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 func TestNativeTypes(t *testing.T) {
@@ -873,10 +873,19 @@ func TestNativeTypeConvertToType(t *testing.T) {
 	for i, tst := range nativeTests {
 		tc := tst
 		t.Run(fmt.Sprintf("[%d]", i), func(t *testing.T) {
-			handler := fieldNameByTag(tc.tag)
-			nt, err := newNativeType(handler, reflect.TypeOf(&TestAllTypes{}))
+			handler := func(f reflect.StructField) string {
+				tag, found := f.Tag.Lookup(tc.tag)
+				if found {
+					splits := strings.Split(tag, ",")
+					if len(splits) > 0 {
+						return splits[0]
+					}
+				}
+				return f.Name
+			}
+			nt, err := types.NewNativeType(reflect.TypeFor[*TestAllTypes](), types.ParseStructField(handler))
 			if err != nil {
-				t.Fatalf("newNativeType() failed: %v", err)
+				t.Fatalf("NewNativeType() failed: %v", err)
 			}
 			if nt.ConvertToType(types.TypeType) != types.TypeType {
 				t.Error("ConvertToType(Type) failed")
@@ -889,9 +898,9 @@ func TestNativeTypeConvertToType(t *testing.T) {
 }
 
 func TestNativeTypeConvertToNative(t *testing.T) {
-	nt, err := newNativeType(fieldNameByTag("cel"), reflect.TypeOf(&TestAllTypes{}))
+	nt, err := types.NewNativeType(reflect.TypeFor[*TestAllTypes]())
 	if err != nil {
-		t.Fatalf("newNativeType() failed: %v", err)
+		t.Fatalf("NewNativeType() failed: %v", err)
 	}
 	out, err := nt.ConvertToNative(reflect.TypeOf(1))
 	if err == nil {
@@ -900,9 +909,9 @@ func TestNativeTypeConvertToNative(t *testing.T) {
 }
 
 func TestNativeTypeHasTrait(t *testing.T) {
-	nt, err := newNativeType(fieldNameByTag("cel"), reflect.TypeOf(&TestAllTypes{}))
+	nt, err := types.NewNativeType(reflect.TypeFor[*TestAllTypes]())
 	if err != nil {
-		t.Fatalf("newNativeType() failed: %v", err)
+		t.Fatalf("NewNativeType() failed: %v", err)
 	}
 	if !nt.HasTrait(traits.IndexerType) || !nt.HasTrait(traits.FieldTesterType) {
 		t.Error("nt.HasTrait() failed indicate support for presence test and field access.")
@@ -910,9 +919,9 @@ func TestNativeTypeHasTrait(t *testing.T) {
 }
 
 func TestNativeTypeValue(t *testing.T) {
-	nt, err := newNativeType(fieldNameByTag("cel"), reflect.TypeOf(&TestAllTypes{}))
+	nt, err := types.NewNativeType(reflect.TypeFor[*TestAllTypes]())
 	if err != nil {
-		t.Fatalf("newNativeType() failed: %v", err)
+		t.Fatalf("NewNativeType() failed: %v", err)
 	}
 	if nt.Value() != nt.String() {
 		t.Errorf("nt.Value() got %v, wanted %v", nt.Value(), nt.String())
@@ -920,12 +929,25 @@ func TestNativeTypeValue(t *testing.T) {
 }
 
 func TestNativeStructWithMultipleSameFieldNames(t *testing.T) {
-	_, err := newNativeType(fieldNameByTag("cel"), reflect.TypeOf(TestStructWithMultipleSameNames{}))
-	if err == nil {
-		t.Fatal("newNativeType() did not fail as expected")
+	tagHandler := func(f reflect.StructField) string {
+		tag, found := f.Tag.Lookup("cel")
+		if found {
+			splits := strings.Split(tag, ",")
+			if len(splits) > 0 {
+				return splits[0]
+			}
+		}
+		return f.Name
 	}
-	if !errors.Is(err, errDuplicatedFieldName) {
-		t.Fatalf("newNativeType() exepected duplicated field name error, but got: %v", err)
+	_, err := types.NewNativeType(
+		reflect.TypeFor[TestStructWithMultipleSameNames](),
+		types.ParseStructField(tagHandler),
+	)
+	if err == nil {
+		t.Fatal("NewNativeType() did not fail as expected")
+	}
+	if !strings.Contains(err.Error(), "field name already exists") {
+		t.Fatalf("NewNativeType() expected duplicated field name error, but got: %v", err)
 	}
 }
 
@@ -961,6 +983,15 @@ func TestNativeStructEmbedded(t *testing.T) {
 				"test": &TestEmbeddedTypes{
 					TestNestedType: TestNestedType{NestedCustomName: "name"},
 					Skipped:        "should-be-hidden",
+				},
+			},
+			out: true,
+		},
+		{
+			expr: `test.Name == "name"`,
+			in: map[string]any{
+				"test": &TestEmbeddedTypes{
+					Custom: Custom{Name: "name"},
 				},
 			},
 			out: true,
@@ -1006,6 +1037,79 @@ func TestNativeStructEmbedded(t *testing.T) {
 						t.Fatalf("got %v, wanted %v for expr: %s", err, tc.out, tc.expr)
 					}
 					continue
+				}
+				if !reflect.DeepEqual(out.Value(), tc.out) {
+					t.Errorf("got %v, wanted %v for expr: %s", out.Value(), tc.out, tc.expr)
+				}
+			}
+		})
+	}
+}
+
+func TestNativeStructEmbeddedPointer(t *testing.T) {
+	nativeTests := []struct {
+		expr string
+		in   map[string]any
+		out  any
+	}{
+		{
+			expr: `!has(test.custom_name) && test.custom_name == ""`,
+			in: map[string]any{
+				"test": &TestEmbeddedPointerTypes{
+					TestNestedType: nil,
+				},
+			},
+			out: true,
+		},
+		{
+			expr: `has(test.custom_name) && test.custom_name == "name"`,
+			in: map[string]any{
+				"test": &TestEmbeddedPointerTypes{
+					TestNestedType: &TestNestedType{NestedCustomName: "name"},
+				},
+			},
+			out: true,
+		},
+		{
+			expr: `ext.TestEmbeddedPointerTypes{custom_name: "name"}.custom_name == "name"`,
+			in:   nil,
+			out:  true,
+		},
+	}
+
+	envOpts := []cel.EnvOption{
+		NativeTypes(
+			reflect.TypeFor[*TestEmbeddedPointerTypes](),
+			reflect.TypeFor[*TestNestedType](),
+			ParseStructTag("json"),
+		),
+		cel.Variable("test", cel.ObjectType("ext.TestEmbeddedPointerTypes")),
+	}
+
+	env, err := cel.NewEnv(envOpts...)
+	if err != nil {
+		t.Fatalf("cel.NewEnv(NativeTypes()) failed: %v", err)
+	}
+
+	for i, tst := range nativeTests {
+		tc := tst
+		t.Run(fmt.Sprintf("[%d]", i), func(t *testing.T) {
+			pAst, iss := env.Parse(tc.expr)
+			if iss.Err() != nil {
+				t.Fatalf("env.Parse(%v) failed: %v", tc.expr, iss.Err())
+			}
+			cAst, iss := env.Check(pAst)
+			if iss.Err() != nil {
+				t.Fatalf("env.Check(%v) failed: %v", tc.expr, iss.Err())
+			}
+			for _, ast := range []*cel.Ast{pAst, cAst} {
+				prg, err := env.Program(ast)
+				if err != nil {
+					t.Fatal(err)
+				}
+				out, _, err := prg.Eval(tc.in)
+				if err != nil {
+					t.Fatalf("prg.Eval() failed: %v", err)
 				}
 				if !reflect.DeepEqual(out.Value(), tc.out) {
 					t.Errorf("got %v, wanted %v for expr: %s", out.Value(), tc.out, tc.expr)
@@ -1168,7 +1272,7 @@ func TestTypeResolutionRace(t *testing.T) {
 }
 
 // testEnv initializes the test environment common to all tests.
-func testNativeEnv(t *testing.T, opts ...any) *cel.Env {
+func testNativeEnv(t testing.TB, opts ...any) *cel.Env {
 	t.Helper()
 	envOpts := []cel.EnvOption{
 		cel.Container("ext"),
@@ -1217,8 +1321,8 @@ type Custom struct {
 }
 
 type TestStructWithMultipleSameNames struct {
-	Name        string
-	custom_name string `cel:"Name"`
+	Name       string
+	CustomName string `cel:"Name"`
 }
 
 type TestNestedType struct {
@@ -1268,12 +1372,243 @@ type TestMapVal struct {
 }
 
 type TestEmbeddedTypes struct {
+	Custom
 	TestNestedType `json:"embedded,omitempty"`
 	Skipped        string `json:"-"`
+}
+
+type TestEmbeddedPointerTypes struct {
+	*TestNestedType `json:"embedded,omitempty"`
 }
 
 type TestRefValFieldType struct {
 	OptionalName *types.Optional `cel:"optional_name"`
 	IntVal       types.Int
 	CELTime      types.Timestamp `cel:"time"`
+}
+
+// registeredNativeStruct is registered with NativeTypes in the delegation test.
+type registeredNativeStruct struct {
+	Name string
+}
+
+// unregisteredNativeStruct is not registered, so NativeToValue should hand it to
+// the composed base adapter rather than wrapping it as a native object.
+type unregisteredNativeStruct struct {
+	Name string
+}
+
+// recordingAdapter converts unregisteredNativeStruct into a sentinel string and
+// records that it was asked to, so the test can confirm nativeTypeProvider
+// delegated the value. Everything else falls through to the base adapter.
+type recordingAdapter struct {
+	base types.Adapter
+	saw  bool
+}
+
+func (a *recordingAdapter) NativeToValue(value any) ref.Val {
+	if _, ok := value.(unregisteredNativeStruct); ok {
+		a.saw = true
+		return types.String("from-base-adapter")
+	}
+	return a.base.NativeToValue(value)
+}
+
+func TestNativeToValueDelegatesUnregisteredStructs(t *testing.T) {
+	custom := &recordingAdapter{base: types.DefaultTypeAdapter}
+	env, err := cel.NewEnv(
+		cel.CustomTypeAdapter(custom),
+		NativeTypes(reflect.TypeOf(registeredNativeStruct{})),
+	)
+	if err != nil {
+		t.Fatalf("cel.NewEnv() failed: %v", err)
+	}
+	adapter := env.CELTypeAdapter()
+
+	// An unregistered struct must reach the composed base adapter.
+	got := adapter.NativeToValue(unregisteredNativeStruct{Name: "x"})
+	if !custom.saw {
+		t.Error("base adapter was not consulted for an unregistered struct")
+	}
+	if got.Equal(types.String("from-base-adapter")) != types.True {
+		t.Errorf("NativeToValue(unregisteredNativeStruct) = %v, want the base adapter's value", got)
+	}
+
+	// A registered native type must still be wrapped as a native object.
+	custom.saw = false
+	gotReg := adapter.NativeToValue(registeredNativeStruct{Name: "y"})
+	if custom.saw {
+		t.Error("base adapter was consulted for a registered native type")
+	}
+	if tn := gotReg.Type().TypeName(); !strings.Contains(tn, "registeredNativeStruct") {
+		t.Errorf("NativeToValue(registeredNativeStruct).Type() = %q, want a native object type", tn)
+	}
+}
+
+func BenchmarkNativeTypesEval(b *testing.B) {
+	benchmarks := []struct {
+		name    string
+		expr    string
+		in      any
+		envOpts []any
+	}{
+		{
+			name: "FieldAccess",
+			expr: "t.Int32Val + t.Int64Val",
+			in: map[string]any{
+				"t": &TestAllTypes{Int32Val: 10, Int64Val: 20},
+			},
+		},
+		{
+			name: "NestedFieldAccess",
+			expr: "t.NestedVal.NestedCustomName == 'name'",
+			in: map[string]any{
+				"t": &TestAllTypes{
+					NestedVal: &TestNestedType{NestedCustomName: "name"},
+				},
+			},
+		},
+		{
+			name: "StructCreation",
+			expr: `ext.TestAllTypes{
+				BoolVal: true,
+				Int32Val: 10,
+				Int64Val: 20,
+				StringVal: 'hello world',
+			}`,
+		},
+		{
+			name: "FieldPresence",
+			expr: "has(t.BoolVal) && has(t.NestedVal)",
+			in: map[string]any{
+				"t": &TestAllTypes{
+					BoolVal:   true,
+					NestedVal: &TestNestedType{},
+				},
+			},
+		},
+		{
+			name:    "StructTagFieldAccess",
+			expr:    "t.custom_name == 'name'",
+			envOpts: []any{ParseStructTags(true)},
+			in: map[string]any{
+				"t": &TestAllTypes{CustomName: "name"},
+			},
+		},
+		{
+			name: "ListExists",
+			expr: "tests.exists(t, t.Int32Val > 15)",
+			in: map[string]any{
+				"tests": []*TestAllTypes{
+					{Int32Val: 10},
+					{Int32Val: 20},
+				},
+			},
+		},
+	}
+
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			envOpts := append([]any{
+				cel.Variable("t", cel.ObjectType("ext.TestAllTypes")),
+			}, bm.envOpts...)
+			env := testNativeEnv(b, envOpts...)
+			ast, iss := env.Compile(bm.expr)
+			if iss.Err() != nil {
+				b.Fatalf("env.Compile(%q) failed: %v", bm.expr, iss.Err())
+			}
+			prg, err := env.Program(ast, cel.EvalOptions(cel.OptOptimize))
+			if err != nil {
+				b.Fatalf("env.Program() failed: %v", err)
+			}
+			input := bm.in
+			if input == nil {
+				input = cel.NoVars()
+			}
+			b.ResetTimer()
+			b.ReportAllocs()
+			for i := 0; i < b.N; i++ {
+				prg.Eval(input)
+			}
+		})
+	}
+}
+
+func BenchmarkNativeToValue(b *testing.B) {
+	env := testNativeEnv(b)
+	adapter := env.CELTypeAdapter()
+
+	nested := &TestNestedType{
+		NestedListVal:    []string{"a", "b", "c"},
+		NestedMapVal:     map[int64]bool{1: true},
+		NestedCustomName: "test",
+	}
+	allTypes := &TestAllTypes{
+		BoolVal:   true,
+		Int32Val:  10,
+		Int64Val:  20,
+		StringVal: "hello world",
+		NestedVal: nested,
+		ListVal:   []*TestNestedType{nested},
+	}
+	allTypesSlice := []*TestAllTypes{allTypes, allTypes}
+
+	benchmarks := []struct {
+		name string
+		val  any
+	}{
+		{name: "TestNestedType", val: nested},
+		{name: "TestAllTypes", val: allTypes},
+		{name: "SliceTestAllTypes", val: allTypesSlice},
+	}
+
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			b.ResetTimer()
+			b.ReportAllocs()
+			for i := 0; i < b.N; i++ {
+				adapter.NativeToValue(bm.val)
+			}
+		})
+	}
+}
+
+func BenchmarkConvertToNative(b *testing.B) {
+	env := testNativeEnv(b)
+	adapter := env.CELTypeAdapter()
+
+	allTypes := &TestAllTypes{
+		BoolVal:   true,
+		Int32Val:  10,
+		Int64Val:  20,
+		StringVal: "hello world",
+	}
+	celVal := adapter.NativeToValue(allTypes)
+	targetType := reflect.TypeOf(&TestAllTypes{})
+
+	allTypesSlice := []*TestAllTypes{allTypes, allTypes}
+	celSliceVal := adapter.NativeToValue(allTypesSlice)
+	sliceTargetType := reflect.TypeOf([]*TestAllTypes{})
+
+	b.Run("TestAllTypes", func(b *testing.B) {
+		b.ResetTimer()
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			_, err := celVal.ConvertToNative(targetType)
+			if err != nil {
+				b.Fatalf("ConvertToNative failed: %v", err)
+			}
+		}
+	})
+
+	b.Run("SliceTestAllTypes", func(b *testing.B) {
+		b.ResetTimer()
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			_, err := celSliceVal.ConvertToNative(sliceTargetType)
+			if err != nil {
+				b.Fatalf("ConvertToNative failed: %v", err)
+			}
+		}
+	})
 }

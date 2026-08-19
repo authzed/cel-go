@@ -20,18 +20,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/containers"
-	"github.com/google/cel-go/common/debug"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/stdlib"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/parser"
-	"github.com/google/cel-go/test"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/containers"
+	"cel.dev/cel-go/common/debug"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/stdlib"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/parser"
+	"cel.dev/cel-go/test"
 
-	proto2pb "github.com/google/cel-go/test/proto2pb"
-	proto3pb "github.com/google/cel-go/test/proto3pb"
+	proto2pb "cel.dev/cel-go/test/proto2pb"
+	proto3pb "cel.dev/cel-go/test/proto3pb"
 )
 
 func testCases(t testing.TB) []testInfo {
@@ -2542,12 +2542,12 @@ func TestCheck(t *testing.T) {
 				t.Fatalf("Unexpected parse errors: %v", errors.ToDisplayString())
 			}
 
-			reg, err := types.NewProtoRegistry(
+			reg, err := types.NewRegistry(
 				types.JSONFieldNames(tc.env.jsonFieldNames),
 				types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}),
 			)
 			if err != nil {
-				t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+				t.Fatalf("types.NewRegistry() failed: %v", err)
 			}
 			if tc.env.optionalSyntax {
 				if err := reg.RegisterType(types.OptionalType); err != nil {
@@ -2654,9 +2654,9 @@ func BenchmarkCheck(b *testing.B) {
 			if len(errors.GetErrors()) > 0 {
 				b.Fatalf("Unexpected parse errors: %v", errors.ToDisplayString())
 			}
-			reg, err := types.NewProtoRegistry(types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}))
+			reg, err := types.NewRegistry(types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}))
 			if err != nil {
-				b.Fatalf("types.NewProtoRegistry() failed: %v", err)
+				b.Fatalf("types.NewRegistry() failed: %v", err)
 			}
 			if tc.env.optionalSyntax {
 				if err := reg.RegisterType(types.OptionalType); err != nil {
@@ -2723,9 +2723,9 @@ func BenchmarkCheck(b *testing.B) {
 }
 
 func TestAddDuplicateDeclarations(t *testing.T) {
-	reg, err := types.NewProtoRegistry(types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}))
+	reg, err := types.NewRegistry(types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}))
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	env, err := NewEnv(containers.DefaultContainer, reg, CrossTypeNumericComparisons(true))
 	if err != nil {
@@ -2742,9 +2742,9 @@ func TestAddDuplicateDeclarations(t *testing.T) {
 }
 
 func TestAddEquivalentDeclarations(t *testing.T) {
-	reg, err := types.NewProtoRegistry(types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}))
+	reg, err := types.NewRegistry(types.ProtoTypeDefs(&proto2pb.TestAllTypes{}, &proto3pb.TestAllTypes{}))
 	if err != nil {
-		t.Fatalf("types.NewProtoRegistry() failed: %v", err)
+		t.Fatalf("types.NewRegistry() failed: %v", err)
 	}
 	env, err := NewEnv(containers.DefaultContainer, reg, CrossTypeNumericComparisons(true))
 	if err != nil {
@@ -2869,4 +2869,51 @@ func testFunction(t testing.TB, name string, opts ...decls.FunctionOpt) *decls.F
 		t.Fatalf("decls.NewFunction(%s) failed: %v", name, err)
 	}
 	return fn
+}
+
+func TestVarsInheritance(t *testing.T) {
+	// Parent environment containing inherited variables 'y' and 'x'
+	parentEnv, err := NewEnv(containers.DefaultContainer, newTestRegistry(t))
+	if err != nil {
+		t.Fatalf("NewEnv() failed: %v", err)
+	}
+	err = parentEnv.AddFunctions(stdlib.Functions()...)
+	if err != nil {
+		t.Fatalf("parentEnv.AddFunctions() failed: %v", err)
+	}
+	err = parentEnv.AddIdents(decls.NewVariable("z", types.IntType))
+	if err != nil {
+		t.Fatalf("parentEnv.AddIdents() failed: %v", err)
+	}
+
+	// Child environment inheriting declarations from parentEnv
+	childEnv, err := NewEnv(containers.DefaultContainer, newTestRegistry(t), ValidatedDeclarations(parentEnv))
+	if err != nil {
+		t.Fatalf("NewEnv(ValidatedDeclarations) failed: %v", err)
+	}
+	err = childEnv.AddIdents(decls.NewVariable("y", types.NewListType(types.IntType)))
+	if err != nil {
+		t.Fatalf("childEnv.AddIdents() failed: %v", err)
+	}
+
+	src := common.NewTextSource(`y + [1, 2, 3].filter(x, .z > x)`)
+	p, err := parser.NewParser(parser.Macros(parser.AllMacros...))
+	if err != nil {
+		t.Fatalf("parser.NewParser() failed: %v", err)
+	}
+	parsedAst, iss := p.Parse(src)
+	if len(iss.GetErrors()) > 0 {
+		t.Fatalf("parser.Parse() failed: %v", iss.ToDisplayString())
+	}
+
+	checkedAst, iss := Check(parsedAst, src, childEnv)
+	if len(iss.GetErrors()) > 0 {
+		t.Fatalf("Check() failed: %v", iss.ToDisplayString())
+	}
+
+	wantType := types.NewListType(types.IntType)
+	gotType := checkedAst.GetType(checkedAst.Expr().ID())
+	if !gotType.IsExactType(wantType) {
+		t.Errorf("got result type %v, wanted %v", gotType, wantType)
+	}
 }

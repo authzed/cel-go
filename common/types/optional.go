@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 var (
@@ -119,4 +119,12 @@ func (o *Optional) Value() any {
 		return nil
 	}
 	return o.value.Value()
+}
+
+// AggregateSize implements the AggregateSizeVisitor interface method.
+func (o *Optional) AggregateSize(sizer AggregateSizer) uint32 {
+	if !o.HasValue() {
+		return 0
+	}
+	return safeAddUint32(1, sizer.AggregateSize(o.value))
 }

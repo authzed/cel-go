@@ -14,7 +14,42 @@
 
 package types
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
+
+func TestSafeUint32Helpers(t *testing.T) {
+	// safeAddUint32
+	if got := safeAddUint32(10, 20); got != 30 {
+		t.Errorf("safeAddUint32(10, 20) got %d, want 30", got)
+	}
+	if got := safeAddUint32(math.MaxUint32-5, 10); got != math.MaxUint32 {
+		t.Errorf("safeAddUint32(overflow) got %d, want MaxUint32", got)
+	}
+
+	// safeUint32FromInt
+	if got := safeUint32FromInt(42); got != 42 {
+		t.Errorf("safeUint32FromInt(42) got %d, want 42", got)
+	}
+	if got := safeUint32FromInt(-1); got != math.MaxUint32 {
+		t.Errorf("safeUint32FromInt(-1) got %d, want MaxUint32", got)
+	}
+	if got := safeUint32FromInt(int(uint64(math.MaxUint32) + 100)); got != math.MaxUint32 {
+		t.Errorf("safeUint32FromInt(overflow) got %d, want MaxUint32", got)
+	}
+
+	// safeUint32FromBoxedInt
+	if got := safeUint32FromBoxedInt(Int(42)); got != 42 {
+		t.Errorf("safeUint32FromBoxedInt(42) got %d, want 42", got)
+	}
+	if got := safeUint32FromBoxedInt(Int(-1)); got != math.MaxUint32 {
+		t.Errorf("safeUint32FromBoxedInt(-1) got %d, want MaxUint32", got)
+	}
+	if got := safeUint32FromBoxedInt(Int(int64(math.MaxUint32) + 100)); got != math.MaxUint32 {
+		t.Errorf("safeUint32FromBoxedInt(overflow) got %d, want MaxUint32", got)
+	}
+}
 
 func BenchmarkIsUnknownOrError(b *testing.B) {
 	err := NewErr("test")

@@ -19,16 +19,17 @@ import (
 	"math"
 	"sort"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker"
-	"github.com/google/cel-go/common"
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
-	"github.com/google/cel-go/interpreter"
-	"github.com/google/cel-go/parser"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/checker"
+	"cel.dev/cel-go/common"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/cost"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
+	"cel.dev/cel-go/interpreter"
+	"cel.dev/cel-go/parser"
 )
 
 var comparableTypes = []*cel.Type{
@@ -192,7 +193,7 @@ func ListsVersion(version uint32) ListsOption {
 }
 
 // ListsMaxRangeSize sets the maximum number of elements lists.range() will
-// allocate. If not set, the default is 10,000,000. Setting this to zero
+// allocate. If not set, the default is 1,000,000. Setting this to zero
 // disables the limit (not recommended).
 func ListsMaxRangeSize(size int64) ListsOption {
 	return func(lib *listsLib) *listsLib {
@@ -893,7 +894,7 @@ func trackListSelfCompare(l traits.Lister) *uint64 {
 	if elem.Type() == types.StringType || elem.Type() == types.BytesType {
 		costFactor += common.StringTraversalCostFactor
 	}
-	return trackAllocatingListCall(costFactor, safeMul(sz, sz))
+	return trackAllocatingListCall(costFactor, cost.SafeMultiply(sz, sz))
 }
 
 // trackAllocatingListCall computes costs as a function of the size of the result list with a baseline cost
@@ -902,8 +903,8 @@ func trackAllocatingListCall(costFactor float64, size uint64) *uint64 {
 	if costFactor < 0.0 {
 		costFactor = 1.0
 	}
-	cost := safeAdd(uint64(float64(size)*costFactor), callCost, common.ListCreateBaseCost)
-	return &cost
+	total := cost.SafeAdd(uint64(float64(size)*costFactor), callCost, common.ListCreateBaseCost)
+	return &total
 }
 
 func estimateListDistinctLegacy(estimator checker.CostEstimator, target *checker.AstNode, args []checker.AstNode) *checker.CallEstimate {

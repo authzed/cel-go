@@ -18,13 +18,13 @@ import (
 	"reflect"
 	"testing"
 
-	celenv "github.com/google/cel-go/common/env"
-	"github.com/google/cel-go/common/operators"
-	"github.com/google/cel-go/common/overloads"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
-	"github.com/google/cel-go/test"
+	celenv "cel.dev/cel-go/common/env"
+	"cel.dev/cel-go/common/operators"
+	"cel.dev/cel-go/common/overloads"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
+	"cel.dev/cel-go/test"
 )
 
 func TestValidateDurationLiterals(t *testing.T) {
@@ -201,6 +201,77 @@ func TestValidateRegexLiterals(t *testing.T) {
 				t.Fatalf("e.Compile(%v) failed: %v", tc.expr, iss.Err())
 			}
 		})
+	}
+}
+
+func TestValidateRegexProgramSizeLimit(t *testing.T) {
+	opts := []EnvOption{
+		Variable("x", types.StringType),
+		ASTValidators(ValidateRegexProgramSizeLimit(5)),
+	}
+
+	tests := []struct {
+		expr string
+		iss  string
+	}{
+		{
+			expr: `'hello'.matches('el*')`,
+		},
+		{
+			expr: `'hello'.matches('(a|b)*[0-9]+')`,
+			iss: `
+			ERROR: <input>:1:17: regex program size 8 exceeds limit of 5
+             | 'hello'.matches('(a|b)*[0-9]+')
+             | ................^`,
+		},
+		{
+			expr: `'hello'.matches(x)`,
+		},
+	}
+	for _, tst := range tests {
+		tc := tst
+		t.Run(tc.expr, func(t *testing.T) {
+			_, err := Compile(tc.expr, opts...)
+			if tc.iss != "" {
+				if err == nil {
+					t.Fatalf("Compile(%v) returned ast, expected error: %v", tc.expr, tc.iss)
+				}
+				if !test.Compare(err.Error(), tc.iss) {
+					t.Fatalf("Compile(%v) returned %v, expected error: %v", tc.expr, err, tc.iss)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("Compile(%v) failed: %v", tc.expr, err)
+			}
+		})
+	}
+}
+
+func TestValidateRegexProgramSizeLimitToConfig(t *testing.T) {
+	val := ValidateRegexProgramSizeLimit(5)
+	cfg := val.(ConfigurableASTValidator).ToConfig()
+	if cfg.Name != regexProgramSizeLimitValidatorName {
+		t.Errorf("ToConfig().Name = %s, wanted %s", cfg.Name, regexProgramSizeLimitValidatorName)
+	}
+	if limit, ok := cfg.ConfigValue("limit"); !ok || limit != 5 {
+		t.Errorf("ToConfig().ConfigValue('limit') = %v, wanted 5", limit)
+	}
+}
+
+func TestValidateRegexProgramSizeLimitFactory(t *testing.T) {
+	val := ValidateRegexProgramSizeLimit(5)
+	cfg := val.(ConfigurableASTValidator).ToConfig()
+	fac, ok := astValidatorFactories[regexProgramSizeLimitValidatorName]
+	if !ok {
+		t.Fatalf("missing factory for %s", regexProgramSizeLimitValidatorName)
+	}
+	vFromCfg, err := fac(cfg)
+	if err != nil {
+		t.Fatalf("fac(cfg) failed: %v", err)
+	}
+	if vFromCfg.Name() != regexProgramSizeLimitValidatorName {
+		t.Errorf("vFromCfg.Name() = %s, wanted %s", vFromCfg.Name(), regexProgramSizeLimitValidatorName)
 	}
 }
 

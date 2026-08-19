@@ -17,11 +17,11 @@ package cel
 import (
 	"fmt"
 
-	"github.com/google/cel-go/common/ast"
-	"github.com/google/cel-go/common/decls"
-	"github.com/google/cel-go/common/functions"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/ast"
+	"cel.dev/cel-go/common/decls"
+	"cel.dev/cel-go/common/functions"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 
 	celpb "cel.dev/expr"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -220,7 +220,11 @@ func ExcludeOverloads(overloadIDs ...string) OverloadSelector {
 // FunctionDecls provides one or more fully formed function declarations to be added to the environment.
 func FunctionDecls(funcs ...*decls.FunctionDecl) EnvOption {
 	return func(e *Env) (*Env, error) {
+		if len(funcs) == 0 {
+			return e, nil
+		}
 		var err error
+		e.ensureMutableFunctions()
 		for _, fn := range funcs {
 			if existing, found := e.functions[fn.Name()]; found {
 				fn, err = existing.Merge(fn)

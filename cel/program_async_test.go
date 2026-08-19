@@ -24,13 +24,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/cel/async"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/ext"
-	"github.com/google/cel-go/interpreter"
-	"github.com/google/cel-go/test"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/cel/async"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/ext"
+	"cel.dev/cel-go/interpreter"
+	"cel.dev/cel-go/test"
 )
 
 func TestConcurrentEval(t *testing.T) {
@@ -188,7 +188,7 @@ func TestConcurrentEval(t *testing.T) {
 		{
 			name:      "drain_ready_partial_debounce",
 			expr:      `delayed_rpc("a", 1) + delayed_rpc("b", 2) + delayed_rpc("c", 10)`,
-			opts:      []any{cel.ConcurrentDrainStrategy(async.DrainReady(2 * time.Millisecond))},
+			opts:      []any{cel.ConcurrentDrainStrategy(async.DrainReady(3 * time.Millisecond))},
 			trackCost: true,
 			wantCost:  15,
 			want:      "abc",
